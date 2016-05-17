@@ -78,7 +78,6 @@
 
 -(CGFloat)formView:(BHFormView *)formView heightForColumn:(NSInteger)column atRow:(NSInteger)row
 {
-    
     if (column == 0) {
         switch (row) {
             case 0:
@@ -107,8 +106,6 @@
 -(CGFloat)formView:(BHFormView *)formView widthForColumn:(NSInteger)column atRow:(NSInteger)row
 {
     CGFloat width = 0.0f;
-    
-    
     if (column == 0 && (row == 0 || row == 2)) {
         width = formView.frame.size.width / 7.0f;
     }
@@ -116,8 +113,6 @@
     {
         width = (formView.frame.size.width / 7.0f) * 2;
     }
-    
-    
     return width;
 }
 
