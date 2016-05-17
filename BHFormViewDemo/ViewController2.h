@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  ViewController2.h
 //  BHFormViewDemo
 //
 //  Created by 熊伟 on 2016/5/16.
@@ -8,10 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import "BHFormView.h"
-@interface ViewController : UIViewController<BHFormViewDataSource,BHFormViewDelegate>
+
+
+
+@interface ViewController2 : UIViewController<BHFormViewDataSource,BHFormViewDelegate>
 {
-  IBOutlet  BHFormView *mFormView;
+    __weak IBOutlet BHFormView *mFromView;
 }
 
 @end
-

@@ -10,9 +10,13 @@
 		A5A573CE1CE9C7CF00B1F8AD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A573CD1CE9C7CF00B1F8AD /* main.m */; };
 		A5A573D11CE9C7CF00B1F8AD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A573D01CE9C7CF00B1F8AD /* AppDelegate.m */; };
 		A5A573D41CE9C7CF00B1F8AD /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A573D31CE9C7CF00B1F8AD /* ViewController.m */; };
-		A5A573D71CE9C7CF00B1F8AD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A5A573D51CE9C7CF00B1F8AD /* Main.storyboard */; };
 		A5A573D91CE9C7CF00B1F8AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A5A573D81CE9C7CF00B1F8AD /* Assets.xcassets */; };
 		A5A573DC1CE9C7CF00B1F8AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A5A573DA1CE9C7CF00B1F8AD /* LaunchScreen.storyboard */; };
+		A5A573E41CE9C7ED00B1F8AD /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5A573E31CE9C7ED00B1F8AD /* ViewController.xib */; };
+		A5A573E81CE9C8D100B1F8AD /* BHFormView.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A573E71CE9C8D100B1F8AD /* BHFormView.m */; };
+		A5A573EB1CE9CACF00B1F8AD /* UIImage+FuntionExtention.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A573EA1CE9CACF00B1F8AD /* UIImage+FuntionExtention.m */; };
+		A5A573EF1CE9DBDC00B1F8AD /* ViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A573ED1CE9DBDC00B1F8AD /* ViewController2.m */; };
+		A5A573F01CE9DBDC00B1F8AD /* ViewController2.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5A573EE1CE9DBDC00B1F8AD /* ViewController2.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,10 +26,17 @@
 		A5A573D01CE9C7CF00B1F8AD /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		A5A573D21CE9C7CF00B1F8AD /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		A5A573D31CE9C7CF00B1F8AD /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		A5A573D61CE9C7CF00B1F8AD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A5A573D81CE9C7CF00B1F8AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A5A573DB1CE9C7CF00B1F8AD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A5A573DD1CE9C7CF00B1F8AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A5A573E31CE9C7ED00B1F8AD /* ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
+		A5A573E61CE9C8D100B1F8AD /* BHFormView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BHFormView.h; sourceTree = "<group>"; };
+		A5A573E71CE9C8D100B1F8AD /* BHFormView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BHFormView.m; sourceTree = "<group>"; };
+		A5A573E91CE9CACF00B1F8AD /* UIImage+FuntionExtention.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+FuntionExtention.h"; sourceTree = "<group>"; };
+		A5A573EA1CE9CACF00B1F8AD /* UIImage+FuntionExtention.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+FuntionExtention.m"; sourceTree = "<group>"; };
+		A5A573EC1CE9DBDC00B1F8AD /* ViewController2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController2.h; sourceTree = "<group>"; };
+		A5A573ED1CE9DBDC00B1F8AD /* ViewController2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController2.m; sourceTree = "<group>"; };
+		A5A573EE1CE9DBDC00B1F8AD /* ViewController2.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ViewController2.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,11 +69,15 @@
 		A5A573CB1CE9C7CF00B1F8AD /* BHFormViewDemo */ = {
 			isa = PBXGroup;
 			children = (
+				A5A573E51CE9C8A500B1F8AD /* BHFormView */,
 				A5A573CF1CE9C7CF00B1F8AD /* AppDelegate.h */,
 				A5A573D01CE9C7CF00B1F8AD /* AppDelegate.m */,
 				A5A573D21CE9C7CF00B1F8AD /* ViewController.h */,
 				A5A573D31CE9C7CF00B1F8AD /* ViewController.m */,
-				A5A573D51CE9C7CF00B1F8AD /* Main.storyboard */,
+				A5A573E31CE9C7ED00B1F8AD /* ViewController.xib */,
+				A5A573EC1CE9DBDC00B1F8AD /* ViewController2.h */,
+				A5A573ED1CE9DBDC00B1F8AD /* ViewController2.m */,
+				A5A573EE1CE9DBDC00B1F8AD /* ViewController2.xib */,
 				A5A573D81CE9C7CF00B1F8AD /* Assets.xcassets */,
 				A5A573DA1CE9C7CF00B1F8AD /* LaunchScreen.storyboard */,
 				A5A573DD1CE9C7CF00B1F8AD /* Info.plist */,
@@ -77,6 +92,17 @@
 				A5A573CD1CE9C7CF00B1F8AD /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A5A573E51CE9C8A500B1F8AD /* BHFormView */ = {
+			isa = PBXGroup;
+			children = (
+				A5A573E61CE9C8D100B1F8AD /* BHFormView.h */,
+				A5A573E71CE9C8D100B1F8AD /* BHFormView.m */,
+				A5A573E91CE9CACF00B1F8AD /* UIImage+FuntionExtention.h */,
+				A5A573EA1CE9CACF00B1F8AD /* UIImage+FuntionExtention.m */,
+			);
+			path = BHFormView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,8 +163,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				A5A573DC1CE9C7CF00B1F8AD /* LaunchScreen.storyboard in Resources */,
+				A5A573F01CE9DBDC00B1F8AD /* ViewController2.xib in Resources */,
+				A5A573E41CE9C7ED00B1F8AD /* ViewController.xib in Resources */,
 				A5A573D91CE9C7CF00B1F8AD /* Assets.xcassets in Resources */,
-				A5A573D71CE9C7CF00B1F8AD /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,23 +176,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5A573E81CE9C8D100B1F8AD /* BHFormView.m in Sources */,
 				A5A573D41CE9C7CF00B1F8AD /* ViewController.m in Sources */,
 				A5A573D11CE9C7CF00B1F8AD /* AppDelegate.m in Sources */,
 				A5A573CE1CE9C7CF00B1F8AD /* main.m in Sources */,
+				A5A573EB1CE9CACF00B1F8AD /* UIImage+FuntionExtention.m in Sources */,
+				A5A573EF1CE9DBDC00B1F8AD /* ViewController2.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		A5A573D51CE9C7CF00B1F8AD /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				A5A573D61CE9C7CF00B1F8AD /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		A5A573DA1CE9C7CF00B1F8AD /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -266,6 +288,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = BHFormViewDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Hiung.BHFormViewDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -277,6 +300,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = BHFormViewDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Hiung.BHFormViewDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";

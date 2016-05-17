@@ -1,0 +1,133 @@
+//
+//  ViewController2.m
+//  BHFormViewDemo
+//
+//  Created by 熊伟 on 2016/5/16.
+//  Copyright © 2016年 熊伟. All rights reserved.
+//
+
+#import "ViewController2.h"
+
+@interface ViewController2 ()
+
+@end
+
+@implementation ViewController2
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    
+    mFromView.dataSource = self;
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [mFromView reloadData];
+}
+
+
+-(NSInteger)formView:(BHFormView *)formView numberOfColumnsInRow:(NSInteger)row
+{
+    switch (row) {
+        case 0:
+            return 4;
+            break;
+        case 1:
+            return 3;
+            break;
+        case 2:
+            return 4;
+            break;
+        case 3:
+        case 4:
+            return 3;
+            break;
+        default:
+            break;
+    }
+    return 0;
+}
+
+-(NSInteger)numberOfRowsInFormView:(BHFormView *)formView
+{
+    return 5;
+}
+
+-(NSString *)formView:(BHFormView *)formView textForColumn:(NSInteger)column inRow:(NSInteger)row
+{
+    return [NSString stringWithFormat:@"%ld行%ld列",(long)row,(long)column];
+}
+
+
+-(CGFloat)formView:(BHFormView *)formView heightForColumn:(NSInteger)column atRow:(NSInteger)row
+{
+    
+    if (column == 0) {
+        switch (row) {
+            case 0:
+                return (formView.frame.size.height / 5) * 2;
+            case 2:
+            {
+                return (formView.frame.size.height / 5) * 3;
+
+            }
+                break;
+            default:
+                return formView.frame.size.height / 5;
+                break;
+        }
+    }
+    return formView.frame.size.height / 5;
+}
+
+
+//返回每一行的基准高度（即改行单元格高度值的最典型值）
+-(CGFloat)formView:(BHFormView *)formView heightForRow:(NSInteger)row
+{
+    return formView.frame.size.height / 5;
+}
+
+-(CGFloat)formView:(BHFormView *)formView widthForColumn:(NSInteger)column atRow:(NSInteger)row
+{
+    CGFloat width = 0.0f;
+    
+    
+    if (column == 0 && (row == 0 || row == 2)) {
+        width = formView.frame.size.width / 7.0f;
+    }
+    else
+    {
+        width = (formView.frame.size.width / 7.0f) * 2;
+    }
+    
+    
+    return width;
+}
+
+
+-(UIColor *)formView:(BHFormView *)formView backgroundColorOfColumn:(NSInteger)column inRow:(NSInteger)row
+{
+    CGFloat R = column * 25;
+    CGFloat G = row * 20;
+    CGFloat B = (column * row * 10) % 255;
+    return [UIColor colorWithRed:R/255.0f green:G/255.0F blue:B/255.0f alpha:(20 * (row+1)) / 255.0f];
+}
+
+@end
