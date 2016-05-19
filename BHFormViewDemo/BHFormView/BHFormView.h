@@ -10,13 +10,6 @@
 
 @class BHFormView;
 
-//typedef NS_ENUM(NSInteger, BHFormViewMode)
-//{
-//    BHFormViewModeDefault,
-//    BHFormViewModeLeft,
-//    BHFormViewModeRight,
-//    BHFormViewModeMiddle,
-//};
 
 @protocol BHFormViewDataSource <NSObject>
 /*获取函数*/
@@ -64,9 +57,5 @@
 @property (nonatomic, weak) id<BHFormViewDataSource> dataSource;
 @property (nonatomic, weak) id<BHFormViewDelegate> delegate;
 @property (nonatomic, assign) BOOL thickBorder;
-//@property (nonatomic, assign ,readonly) BHFormViewMode mode;
-//- (void)setMode:(BHFormViewMode)mode withMargin:(CGFloat)margin;
-/*获得某一行某一列的单元格（单元格是一个UIButton）*/
-- (UIButton *)itemAtColumn:(NSInteger)column inRow:(NSInteger)row;
 - (void)reloadData;
 @end
