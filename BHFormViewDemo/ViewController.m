@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "ViewController2.h"
+#import "FormViewCell.h"
 
 
 @interface ViewController ()
@@ -41,24 +42,36 @@
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
     [mFormView reloadData];
 }
 
+-(NSInteger)formView:(BHFormView *)formView numberOfColumnsInRow:(NSInteger)row
+{
+    return 20;
+}
 
 -(NSInteger)formViewColumnsInRow:(BHFormView *)formView
 {
-    return 5;
+    return 20;
 }
 
 -(NSInteger)numberOfRowsInFormView:(BHFormView *)formView
 {
-    return 3;
+    return 200;
 }
 
--(NSString *)formView:(BHFormView *)formView textForColumn:(NSInteger)column inRow:(NSInteger)row
+-(BHFormViewCell *)formView:(BHFormView *)formView cellForRow:(NSInteger)row column:(NSInteger)column
 {
-    return [NSString stringWithFormat:@"%ld行%ld列",(long)row,(long)column];
+	static NSString *reuseId = @"aaa";
+	FormViewCell *cell = [formView cellForReuseId:reuseId];
+	if (cell == nil) {
+		cell = [FormViewCell cellFromXIB];
+		cell.reuseIdentifier = reuseId;
+	}
+	cell.titleLabel.text = [NSString stringWithFormat:@"%d %d",row,column];
+	cell.titleLabel.backgroundColor = (row % 2) ? (column %2 ? [UIColor grayColor] : [UIColor greenColor]) : (column %2 ? [UIColor darkGrayColor] : [UIColor blueColor]);
+	
+	return cell;
 }
 
 -(CGFloat)formView:(BHFormView *)formView heightForRow:(NSInteger)row
@@ -66,23 +79,22 @@
    return formView.frame.size.height / 3;
 }
 
-
 -(CGFloat)formView:(BHFormView *)formView widthForColumn:(NSInteger)column
 {
-    CGFloat width = 0.0f;
+    CGFloat width = formView.frame.size.width / 10;
     switch (column) {
         case 0:
         {
-           width = formView.frame.size.width / 5;
+           width = formView.frame.size.width / 10;
         }
             break;
         case 1:
         {
-            width = (formView.frame.size.width / 5) * 2;
+            width = (formView.frame.size.width / 10) * 2;
         }
             break;
         case 2:{
-            width = (formView.frame.size.width / 5) * 2;
+            width = (formView.frame.size.width / 10) * 2;
         }
         default:
             break;
@@ -90,7 +102,6 @@
     
     return width;
 }
-
 
 - (IBAction)next:(id)sender {
     [self.navigationController pushViewController:[ViewController2 new] animated:YES];

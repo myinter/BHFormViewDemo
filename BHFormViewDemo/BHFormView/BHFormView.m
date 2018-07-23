@@ -12,6 +12,7 @@
 
 //单元格重用容器
 static NSMutableSet *reuseCells = nil;
+dispatch_queue_t SerialQueue = nil;
 
 @implementation BHFormView
 
@@ -23,6 +24,25 @@ static NSMutableSet *reuseCells = nil;
 }
 */
 
+-(BHFormView *)init{
+	self = [super init];
+	if (self) {
+		
+	}
+	return self;
+}
+
+-(void)awakeFromNib{
+	[super awakeFromNib];
+	[self initialize];
+}
+
+-(void)initialize{
+	if (SerialQueue == nil) {
+		SerialQueue = dispatch_queue_create("BHFormViewSerial", DISPATCH_QUEUE_SERIAL);
+	}
+}
+
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {
     [super willMoveToSuperview:newSuperview];
@@ -32,211 +52,257 @@ static NSMutableSet *reuseCells = nil;
     }
 }
 
-static UIImage *defaultBackImg = nil;
-static UIImage *defaultBackImg2 = nil;
-static UIImage *defaultBackImg3 = nil;
+-(void)layoutSubviews{
+    
+    [super layoutSubviews];
+    
+    contentScrollView.frame = self.bounds;
+}
 
 -(void)reloadData
 {
-    for (UIView *view in self.subviews) {
-        [view removeFromSuperview];
+	static BOOL isReloading;
+    if (contentScrollView == nil) {
+        contentScrollView = [[UIScrollView alloc]initWithFrame:self.bounds];
+        contentScrollView.delegate = self;
+		[self addSubview:contentScrollView];
     }
-    
-    if (reuseCells == nil) {
-        reuseCells = [NSMutableSet new];
-    }
-    [reuseCells addObjectsFromArray:currentCellBtns];
-    [currentCellBtns removeAllObjects];
-    if (currentCellBtns == nil) {
-        currentCellBtns = [NSMutableArray new];
-    }
-    
-    
-    NSInteger rowCount = [self.dataSource numberOfRowsInFormView:self];
-    NSInteger columnCount = 0;
-    
-    if ([_dataSource respondsToSelector:@selector(formViewColumnsInRow:)]) {
-        columnCount = [self.dataSource formViewColumnsInRow:self];
-    }
-    
-    NSMutableArray *columnCounts = [NSMutableArray new];
-    
-    if ([_dataSource respondsToSelector:@selector(formView:numberOfColumnsInRow:)]) {
-        for (NSInteger rowCounter = 0; rowCounter < rowCount; rowCounter++) {
-            [columnCounts addObject:[NSNumber numberWithUnsignedInteger:[_dataSource formView:self numberOfColumnsInRow:rowCounter]]];
-        }
-    }
-    
-    CGFloat y = 0.f;
-    CGFloat maxWidth = 0.f;
-    CGFloat maxHeight = 0.f;
-    UIColor *borderColor = nil;
-    UIImage *backImage = nil;
-    UIColor *titleColor = nil;
-    UIFont *font = nil;
-    
-    for (NSInteger i = 0; i < rowCount; i++) {
-        CGFloat height = 20;
-        if ([self.dataSource respondsToSelector:@selector(formView:heightForRow:)]) {
-            height = [self.dataSource formView:self heightForRow:i];
-        }
-        CGFloat x = 0.f;
-        
-        
-        //若列数可变，则获取变动的列数。。。
-        if (columnCounts.count) {
-            columnCount = [columnCounts[i]integerValue];
-        }
-        
-        for (NSInteger j = 0; j < columnCount; j++) {
-            
-            
-            CGFloat width;
-            
-            
-            if ([_dataSource respondsToSelector:@selector(formView:widthForColumn:atRow:)]) {
-                //若宽度可变动，则调用可变宽度方法
-                width = [self.dataSource formView:self widthForColumn:j atRow:i];
-            }
-            else
-            {
-                width = [self.dataSource formView:self widthForColumn:j];
-            }
-            
-            CGFloat columnHeight;
-            
-            if ([_dataSource respondsToSelector:@selector(formView:heightForColumn:atRow:)]) {
-                columnHeight = [_dataSource formView:self heightForColumn:j atRow:i];
-            }
-            else
-            {
-                columnHeight = height;
-            }
-            
-            
-            UIButton *btn = [reuseCells anyObject];
-            
-            if (btn) {
-                [reuseCells removeObject:btn];
-            }
-            
-            if (btn == nil) {
-                btn = [[UIButton alloc]init];
-                btn.titleLabel.adjustsFontSizeToFitWidth = YES;
-            }
-            
-            btn.frame = CGRectMake(x,y,width,columnHeight);
-            
-            for (UIView *view in currentCellBtns) {
-                //若x轴坐标有先前行的cell 延伸过来，则x轴坐标自动顺延
-                if (CGRectIntersectsRect(view.frame, btn.frame)) {
-                    //有其他视图被延伸至本行
-                    //并且正好占用了本行预期的开始位置
-                    //则自动向右顺延
-                    btn.frame = CGRectMake(view.frame.size.width + view.frame.origin.x, btn.frame.origin.y, btn.frame.size.width, btn.frame.size.height);
-                }
-            }
-            
-            [currentCellBtns addObject:btn];
-            
-            
-            if (defaultBackImg == nil) {
-                defaultBackImg = [UIImage imageFromColor:[self colorWithHexString:@"dce6f3"]];
-                defaultBackImg2 = [UIImage imageFromColor:[self colorWithHexString:@"f7fbff"]];
-                defaultBackImg3 = [UIImage imageFromColor:[self colorWithHexString:@"f0f7fe"]];
-            }
-            
-            
-            if ([self.dataSource respondsToSelector:@selector(formView:backgroundColorOfColumn:inRow:)]) {
-                UIColor *bgColor = [self.dataSource formView:self backgroundColorOfColumn:j inRow:i];
-                if (bgColor == nil) {
-                    if (i == 0) {
-                        backImage = defaultBackImg;
-                    }else if (i % 2) {
-                        backImage = defaultBackImg2;
-                    }else{
-                        backImage = defaultBackImg3;
-                    }
-                }else{
-                    backImage = [UIImage imageFromColor:bgColor];
-                }
-            }else{
-                if (i == 0) {
-                    backImage = defaultBackImg;
-                }else if (i % 2) {
-                    backImage = defaultBackImg2;
-                }else{
-                    backImage = defaultBackImg3;
-                }
-            }
-            [btn setBackgroundImage:backImage forState:UIControlStateNormal];
-            
-            if ([self.dataSource respondsToSelector:@selector(formViewBorderColor:)]) {
-                borderColor = [self.dataSource formViewBorderColor:self];
-            }else{
-                borderColor = [UIColor colorWithWhite:0.9 alpha:1.000];
-            }
-            [btn.layer setBorderColor:borderColor.CGColor];
-            
-            BOOL action = NO;
-            if ([self.dataSource respondsToSelector:@selector(formView:addActionForColumn:inRow:)]) {
-                action = [self.dataSource formView:self addActionForColumn:j inRow:i];
-            }
-            
-            if ([self.dataSource respondsToSelector:@selector(formView:textColorOfColumn:inRow:)]) {
-                titleColor = [self.dataSource formView:self textColorOfColumn:j inRow:i];
-            }
-            if (titleColor == nil)
-            {
-                if (action) {
-                    titleColor = [self colorWithHexString:@"3e98b5"];
-                }else{
-                    titleColor = [UIColor colorWithRed:75/255.f green:55/255.f blue:39/255.f alpha:1.0];
-                }
-            }
-            [btn setTitleColor:titleColor forState:UIControlStateNormal];
-            [btn setTitleColor:[titleColor colorWithAlphaComponent:0.4f] forState:UIControlStateHighlighted];
-            
-            [btn setTitle:[self.dataSource formView:self textForColumn:j inRow:i] forState:UIControlStateNormal];
-            
-            if ([self.dataSource respondsToSelector:@selector(formViewFontOfContent:)]) {
-                font = [self.dataSource formViewFontOfContent:self];
-            }else{
-                font = [UIFont systemFontOfSize:12];
-            }
-            [btn.titleLabel setFont:font];
-//            CGFloat textWidth = [btn.currentTitle boundingRectWithSize:CGSizeMake(MAXFLOAT, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName : font} context:nil].size.width;
-//            if (self.mode == BHFormViewModeLeft) {
-//                btn.titleEdgeInsets = UIEdgeInsetsMake(0, margin, 0, width - margin - textWidth);
-//            }else if (self.mode == BHFormViewModeRight) {
-//                btn.titleEdgeInsets = UIEdgeInsetsMake(0, width - margin - textWidth, 0, margin);
-//            }
-            
-            [btn.layer setBorderWidth:0.5];
-            btn.tag = 10000 + i * 100 + j;
-            [self addSubview:btn];
-            
-            if (action) {
-                [btn addTarget:self action:@selector(itemClicked:) forControlEvents:UIControlEventTouchUpInside];
-            }else{
-                btn.userInteractionEnabled = NO;
-            }
-            x += width;
-            if (btn.frame.origin.x + width > maxWidth) {
-                maxWidth = btn.frame.origin.x + width;
-            }
-            
-            if (btn.frame.origin.y + columnHeight > maxHeight) {
-                maxHeight = btn.frame.origin.y + columnHeight;
-            }
-        }
-        y += height;
-    }
-    self.frame = (CGRect){self.frame.origin , CGSizeMake(maxWidth, maxHeight)};
-    self.layer.borderColor = borderColor.CGColor;
-    self.layer.borderWidth = 1.f;
+	
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+		while (isReloading) {
+			usleep(16*1000);
+		}
+		isReloading = YES;
+		rowCount = [_dataSource numberOfRowsInFormView:self];
+		_Rows = [NSMutableArray arrayWithCapacity:rowCount];
+		maxHeight = 0.0f;
+		maxWidth = 0.0f;
+		CGFloat baseY = 0.0;
+		for (NSInteger rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+			CGFloat baseX = 0;
+			BHFormViewRow *row = [BHFormViewRow new];
+			row.rowIndex = rowIndex;
+			row.beginX = MAXFLOAT;
+			row.beginY = MAXFLOAT;
+			NSInteger columnCount = [_dataSource formViewColumnsInRow:self];
+			if ([_dataSource respondsToSelector:@selector(formView:numberOfColumnsInRow:)]) {
+				columnCount = [_dataSource formView:self numberOfColumnsInRow:rowIndex];
+			}
+			else{
+				if ([_dataSource respondsToSelector:@selector(formViewColumnsInRow:)]) {
+					columnCount = [_dataSource formViewColumnsInRow:self];
+				}
+			}
+			row.columnCount = columnCount;
+			CGFloat rowBaseHeight = [_dataSource formView:self heightForRow:rowCount];
+			row.hasVeryHighCell = NO;
+			for (int columnIndex = 0; columnIndex!= columnCount; columnIndex++) {
+				CGFloat columnHeight = rowBaseHeight;
+				CGFloat columnWidth = 0.0;
+				if ([_dataSource respondsToSelector:@selector(formView:widthForColumn:atRow:)]) {
+					columnWidth = [_dataSource formView:self widthForColumn:columnIndex atRow:row.rowIndex];
+				}
+				else{
+					if ([_dataSource respondsToSelector:@selector(formView:widthForColumn:)]) {
+						columnWidth = [_dataSource formView:self widthForColumn:columnIndex];
+					}
+				}
+				if ([_dataSource respondsToSelector:@selector(formView:heightForColumn:atRow:)]) {
+					columnHeight = [_dataSource formView:self heightForColumn:columnIndex atRow:rowIndex];
+					if (columnHeight > rowBaseHeight) {
+						row.hasVeryHighCell = YES;
+					}
+				}
+				CGRect rectForColumCell = CGRectMake(baseX, baseY, columnWidth, columnHeight);
+				rectForColumCell = CheckCollisionWithRectsInFormerRows(_Rows, rectForColumCell);
+				row.rectsForCells[columnIndex] = rectForColumCell;
+				if (rectForColumCell.origin.y < row.beginY) {
+					row.beginY = rectForColumCell.origin.y;
+				}
+				if (rectForColumCell.origin.x < row.beginX) {
+					row.beginX = rectForColumCell.origin.x;
+				}
+				
+				CGFloat maxX = CGRectGetMaxX(rectForColumCell);
+				baseX = maxX;
+				if (row.maxX < maxX) {
+					row.maxX = maxX;
+				}
+				if (maxWidth < maxX) {
+					maxWidth = maxX;
+				}
+				CGFloat maxY = CGRectGetMaxY(rectForColumCell);
+				if (row.maxY < maxY) {
+					row.maxY = maxY;
+				}
+				if (maxHeight < maxY) {
+					maxHeight = maxY;
+				}
+			}
+			[_Rows addObject:row];
+			baseY += rowBaseHeight;
+		}
+		dispatch_async(dispatch_get_main_queue(), ^{
+			contentScrollView.contentSize = CGSizeMake(maxWidth, maxHeight);
+			[self refreshCells];
+		});
+		isReloading = NO;
+	});
 }
 
+-(CGRect)checkCollisionWithFormerRects:(CGRect)objRect{
+	for (BHFormViewRow *row in _Rows) {
+		if (!row.hasVeryHighCell) {
+			continue;
+		}
+		CGRect *rects = row.rectsForCells;
+		for (int i = 0; i != row.columnCount; i++) {
+			CGRect rect = rects[i];
+			if (CGRectIntersectsRect(rect, objRect)) {
+				objRect = CGRectMake(rect.origin.x + rect.size.width, objRect.origin.y, objRect.size.width, objRect.size.height);
+			}
+		}
+	}
+	return objRect;
+}
+
+
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    contentScrollView.contentSize = CGSizeMake(maxWidth, maxHeight);
+	if (ABS(_lastContentOffest.x - scrollView.contentOffset.x) + ABS(_lastContentOffest.y - scrollView.contentOffset.y) > 10.0) {
+		_lastContentOffest = scrollView.contentOffset;
+		[self refreshCells];
+	}
+	
+}
+
+/*刷新当前的Cell*/
+-(void)refreshCells
+{
+	CGFloat visibleMinX = contentScrollView.contentOffset.x;
+	CGFloat visibleMinY = contentScrollView.contentOffset.y;
+	CGFloat visibleMaxX = visibleMinX + contentScrollView.bounds.size.width;
+	CGFloat visibleMaxY = visibleMinY + contentScrollView.bounds.size.height;
+	
+		for (BHFormViewRow *row in _Rows) {
+			if ((row.beginX > visibleMaxX || row.maxX < visibleMinX) || (row.beginY > visibleMaxY || row.maxY < visibleMinY)) {
+				row.visible = NO;
+				NSLog(@"row.invisible");
+			}
+			else{
+				row.visible = YES;
+			}
+		}
+		
+		for (BHFormViewRow *row in _Rows) {
+			if (row.visible) {
+				BOOL hasVisibleCell = NO;
+				CGRect *rects = row.rectsForCells;
+				BOOL *columnVisibles = row.columnsVisible;
+				NSInteger columnCount = row.columnCount;
+				for (int i = 0; i != columnCount; i++) {
+					//			rects[i].origin.;
+					BOOL visible = isVisibleRect(rects[i], visibleMinX, visibleMinY, visibleMaxX, visibleMaxY);
+					if (visible) {
+						row.visible = YES;
+						hasVisibleCell = YES;
+					}
+					columnVisibles[i] = visible;
+					if (visible) {
+						//获取一个新的cell
+						if (row.currentCells[i] == [NSNull null]) {
+								BHFormViewCell *cell = [_dataSource formView:self cellForRow:row.rowIndex column:i];
+								cell.frame = row.rectsForCells[i];
+								CGRect rectForColumCell = row.rectsForCells[i];
+								row.currentCells[i] = cell;
+								[contentScrollView addSubview:cell];
+						}
+					}else if (hasVisibleCell){
+							for (int columnIndex = i; columnIndex != columnCount; columnIndex++) {
+								BHFormViewCell *cell = (BHFormViewCell *)row.currentCells[columnIndex];
+								if (cell != [NSNull null]) {
+									[cell removeFromSuperview];
+									[self addCellToReusePool:cell];
+									row.currentCells[columnIndex] = [NSNull null];
+								}
+								columnVisibles[columnIndex] = NO;
+							}
+						//隐藏的cell移入重用池
+						break;
+					}
+				}
+			}
+			else{
+				//移除全部cell
+					NSInteger count = row.currentCells.count;
+					NSMutableArray *array = row.currentCells;
+					BOOL *columnVisibles = row.columnsVisible;
+					for (NSInteger columnIndex = 0; columnIndex != count; columnIndex++) {
+						BHFormViewCell *cell = array[columnIndex];
+						columnVisibles[columnIndex] = NO;
+						if (cell != [NSNull null]) {
+								[cell removeFromSuperview];
+								[self addCellToReusePool:cell];
+							array[columnIndex] = [NSNull null];
+						}
+					}
+			}
+		}
+	
+	//根据当前可视的cell重新填写内容。
+}
+-(void)addCellToReusePool:(BHFormViewCell *)cell{
+	if (_reusePoolDict == nil) {
+		_reusePoolDict = [NSMutableDictionary new];
+	}
+	NSMutableArray *poolForIdentifier = _reusePoolDict[cell.reuseIdentifier];
+	if (poolForIdentifier == nil) {
+		poolForIdentifier = [NSMutableArray arrayWithCapacity:64];
+		_reusePoolDict[cell.reuseIdentifier] = poolForIdentifier;
+	}
+	if (poolForIdentifier.count < 1024) {
+		[poolForIdentifier addObject:cell];
+	}
+}
+
+-(BHFormViewCell *)cellForReuseId:(NSString *)reuseId{
+	if (_reusePoolDict == nil) {
+		return nil;
+	}
+	NSMutableArray *poolForIdentifier = _reusePoolDict[reuseId];
+	if ([poolForIdentifier count]) {
+		NSLog(@"单元格重用 _reusePoolDict");
+		BHFormViewCell *cell = [poolForIdentifier lastObject];
+		[poolForIdentifier removeLastObject];
+		return cell;
+	}
+	return nil;
+}
+
+-(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+	[super touchesBegan:touches withEvent:event];
+	if ([_delegate respondsToSelector:@selector(formView:didTapColumn:inRow:)]) {
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+			UITouch *touch = [touches anyObject];
+			CGPoint point =  [touch locationInView:contentScrollView];
+			for (BHFormViewRow *row in _Rows) {
+				if (row.visible) {
+					NSInteger count = row.columnCount;
+					CGRect *rect = row.rectsForCells;
+					for (NSInteger i = 0; i != count; i++) {
+						if (CGRectContainsPoint(rect[i], point)) {
+							dispatch_async(dispatch_get_main_queue(), ^{
+								[_delegate formView:self didTapColumn:i inRow:row.rowIndex];
+							});
+							break;
+						}
+					}
+				}
+			}
+		});
+	}
+}
 
 - (void)itemClicked:(UIButton *)sender
 {
@@ -246,49 +312,5 @@ static UIImage *defaultBackImg3 = nil;
         [_delegate formView:self didTapColumn:col inRow:row];
     }
 }
-
-
-- (UIColor *)colorWithHexString: (NSString *)color
-{
-    NSString *cString = [[color stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] uppercaseString];
-    
-    // String should be 6 or 8 characters
-    if ([cString length] < 6) {
-        return [UIColor clearColor];
-    }
-    
-    // strip 0X if it appears
-    if ([cString hasPrefix:@"0X"])
-        cString = [cString substringFromIndex:2];
-    if ([cString hasPrefix:@"#"])
-        cString = [cString substringFromIndex:1];
-    if ([cString length] != 6)
-        return [UIColor clearColor];
-    
-    // Separate into r, g, b substrings
-    NSRange range;
-    range.location = 0;
-    range.length = 2;
-    
-    //r
-    NSString *rString = [cString substringWithRange:range];
-    
-    //g
-    range.location = 2;
-    NSString *gString = [cString substringWithRange:range];
-    
-    //b
-    range.location = 4;
-    NSString *bString = [cString substringWithRange:range];
-    
-    // Scan values
-    unsigned int r, g, b;
-    [[NSScanner scannerWithString:rString] scanHexInt:&r];
-    [[NSScanner scannerWithString:gString] scanHexInt:&g];
-    [[NSScanner scannerWithString:bString] scanHexInt:&b];
-    
-    return [UIColor colorWithRed:((float) r / 255.0f) green:((float) g / 255.0f) blue:((float) b / 255.0f) alpha:1.0f];
-}
-
 
 @end
