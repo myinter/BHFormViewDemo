@@ -25,5 +25,7 @@
 @property(nonatomic) BOOL visible;
 @property(nonatomic) BOOL hasVeryHighCell;
 @property(nonatomic) CGRect viewPotRect;
+@property(nonatomic) NSInteger minVisibleColumn;
+@property(nonatomic) NSInteger maxVisibleColumn;
 
 @end

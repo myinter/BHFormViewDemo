@@ -77,6 +77,7 @@ dispatch_queue_t SerialQueue = nil;
 		_Rows = [NSMutableArray arrayWithCapacity:rowCount];
 		maxHeight = 0.0f;
 		maxWidth = 0.0f;
+		
 		CGFloat baseY = 0.0;
 		for (NSInteger rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			CGFloat baseX = 0;
@@ -166,7 +167,6 @@ dispatch_queue_t SerialQueue = nil;
 	return objRect;
 }
 
-
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     contentScrollView.contentSize = CGSizeMake(maxWidth, maxHeight);
@@ -174,7 +174,6 @@ dispatch_queue_t SerialQueue = nil;
 		_lastContentOffest = scrollView.contentOffset;
 		[self refreshCells];
 	}
-	
 }
 
 /*刷新当前的Cell*/
@@ -184,17 +183,14 @@ dispatch_queue_t SerialQueue = nil;
 	CGFloat visibleMinY = contentScrollView.contentOffset.y;
 	CGFloat visibleMaxX = visibleMinX + contentScrollView.bounds.size.width;
 	CGFloat visibleMaxY = visibleMinY + contentScrollView.bounds.size.height;
-	
 		for (BHFormViewRow *row in _Rows) {
 			if ((row.beginX > visibleMaxX || row.maxX < visibleMinX) || (row.beginY > visibleMaxY || row.maxY < visibleMinY)) {
 				row.visible = NO;
-				NSLog(@"row.invisible");
 			}
 			else{
 				row.visible = YES;
 			}
 		}
-		
 		for (BHFormViewRow *row in _Rows) {
 			if (row.visible) {
 				BOOL hasVisibleCell = NO;
@@ -249,9 +245,45 @@ dispatch_queue_t SerialQueue = nil;
 					}
 			}
 		}
-	
 	//根据当前可视的cell重新填写内容。
 }
+
+-(void)reloadCell{
+	for (BHFormViewRow *row in _Rows) {
+		NSInteger columnCount = row.columnCount;
+		NSMutableArray *array = row.currentCells;
+		BOOL *columnVisibles = row.columnsVisible;
+		CGRect *rectsForCells = row.rectsForCells;
+		if (row.visible) {
+			for (NSInteger columnIndex = 0; columnIndex!=columnCount; columnIndex++) {
+				if (columnVisibles[columnIndex]) {
+					//获取一个新的cell
+					if (array[columnIndex] == [NSNull null]) {
+						BHFormViewCell *cell = [_dataSource formView:self cellForRow:row.rowIndex column:columnIndex];
+						cell.frame = rectsForCells[columnIndex];
+						row.currentCells[columnIndex] = cell;
+						[contentScrollView addSubview:cell];
+					}
+				}else if (array[columnIndex] != [NSNull null]){
+					BHFormViewCell *cell = array[columnIndex];
+					[cell removeFromSuperview];
+					[self addCellToReusePool:cell];
+				}
+			}
+		}
+		else{
+			for (NSInteger columnIndex = 0; columnIndex!=columnCount; columnIndex++) {
+				if (array[columnIndex] != [NSNull null]) {
+					BHFormViewCell *cell = array[columnIndex];
+					[cell removeFromSuperview];
+					[self addCellToReusePool:cell];
+					array[columnIndex] = [NSNull null];
+				}
+			}
+		}
+	}
+}
+
 -(void)addCellToReusePool:(BHFormViewCell *)cell{
 	if (_reusePoolDict == nil) {
 		_reusePoolDict = [NSMutableDictionary new];
