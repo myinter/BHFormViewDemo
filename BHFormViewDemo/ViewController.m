@@ -47,7 +47,7 @@
 
 -(NSInteger)formView:(BHFormView *)formView numberOfColumnsInRow:(NSInteger)row
 {
-    return 20;
+    return 200;
 }
 
 -(NSInteger)formViewColumnsInRow:(BHFormView *)formView
@@ -81,20 +81,20 @@
 
 -(CGFloat)formView:(BHFormView *)formView widthForColumn:(NSInteger)column
 {
-    CGFloat width = formView.frame.size.width / 10;
+    CGFloat width = formView.frame.size.width / 6;
     switch (column) {
         case 0:
         {
-           width = formView.frame.size.width / 10;
+           width = formView.frame.size.width / 6;
         }
             break;
         case 1:
         {
-            width = (formView.frame.size.width / 10) * 2;
+            width = (formView.frame.size.width / 6) * 2;
         }
             break;
         case 2:{
-            width = (formView.frame.size.width / 10) * 2;
+            width = (formView.frame.size.width / 6) * 2;
         }
         default:
             break;

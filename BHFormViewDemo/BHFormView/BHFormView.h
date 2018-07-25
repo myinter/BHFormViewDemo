@@ -2,8 +2,9 @@
 //  BHFormView.h
 //  BHFormViewDemo
 //
-//  Created by 熊伟 on 2016/5/16.
-//  Copyright © 2016年 熊伟. All rights reserved.
+//  Created by 熊韦华 on 2016/5/16.
+//  Copyright © 2016年 熊韦华. All rights reserved.
+//  Version 2.0 @2018.7
 //
 
 #import <UIKit/UIKit.h>
@@ -49,6 +50,9 @@
 	NSMutableArray<BHFormViewRow *> *_Rows;
 	NSMutableDictionary *_reusePoolDict;
 	CGPoint _lastContentOffest;
+	CGRect *_veryHighCellsRects;
+	NSInteger _veryHighCellsCount;
+	NSInteger _veryHighCellsContainerSize;
 }
 @property (nonatomic, weak) id<BHFormViewDataSource> dataSource;
 @property (nonatomic, weak) id<BHFormViewDelegate> delegate;

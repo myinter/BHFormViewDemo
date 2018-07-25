@@ -17,6 +17,9 @@
     // Drawing code
 }
 */
+-(void)awakeFromNib{
+	_titleLabel.minimumScaleFactor = 0.5;
+}
 
 +(FormViewCell *)cellFromXIB{
 	return [[NSBundle mainBundle]loadNibNamed:@"FormViewCell" owner:nil options:nil][0];

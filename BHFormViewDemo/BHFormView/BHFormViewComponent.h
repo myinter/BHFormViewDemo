@@ -14,5 +14,5 @@
 #include <CoreGraphics/CoreGraphics.h>
 BOOL valueBetween(CGFloat value,CGFloat begin,CGFloat end);
 BOOL isVisibleRect(CGRect rect,CGFloat beginX,CGFloat beginY,CGFloat endX,CGFloat endY);
-CGRect CheckCollisionWithRectsInFormerRows(NSArray<BHFormViewRow *> *rows,CGRect objRect);
+CGRect CheckCollisionWithRectsInFormerRows(CGRect *veryHighCellsRects,NSInteger veryHighCellsCount,CGRect objRect);
 #endif /* BHFormViewComponent_h */

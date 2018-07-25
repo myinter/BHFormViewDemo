@@ -41,6 +41,8 @@
 			[_currentCells addObject:[NSNull null]];
 		}
 	}
+	_maxVisibleColumn = columnCount;
+	_minVisibleColumn = 0;
 	_columnCount = columnCount;
 }
 @end
