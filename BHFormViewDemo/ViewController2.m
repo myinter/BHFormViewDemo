@@ -7,6 +7,7 @@
 //
 
 #import "ViewController2.h"
+#import "FormViewCell.h"
 
 @interface ViewController2 ()
 
@@ -70,10 +71,20 @@
     return 5;
 }
 
--(NSString *)formView:(BHFormView *)formView textForColumn:(NSInteger)column inRow:(NSInteger)row
+-(BHFormViewCell *)formView:(BHFormView *)formView cellForRow:(NSInteger)row column:(NSInteger)column
 {
-    return [NSString stringWithFormat:@"%ld行%ld列",(long)row,(long)column];
+	static NSString *reuseId = @"aaa";
+	FormViewCell *cell = [formView cellForReuseId:reuseId];
+	if (cell == nil) {
+		cell = [FormViewCell cellFromXIB];
+		cell.reuseIdentifier = reuseId;
+	}
+	cell.titleLabel.text = [NSString stringWithFormat:@"%d %d",row,column];
+	cell.titleLabel.backgroundColor = (row % 2) ? (column %2 ? [UIColor grayColor] : [UIColor greenColor]) : (column %2 ? [UIColor darkGrayColor] : [UIColor blueColor]);
+	
+	return cell;
 }
+
 
 
 -(CGFloat)formView:(BHFormView *)formView heightForColumn:(NSInteger)column atRow:(NSInteger)row

@@ -95,6 +95,7 @@ dispatch_queue_t SerialQueue = nil;
 				}
 			}
 			row.columnCount = columnCount;
+			row.midVisibleColumn = columnCount / 2;
 			CGFloat rowBaseHeight = [_dataSource formView:self heightForRow:rowCount];
 			row.hasVeryHighCell = NO;
 			for (int columnIndex = 0; columnIndex!= columnCount; columnIndex++) {
@@ -210,7 +211,6 @@ dispatch_queue_t SerialQueue = nil;
 						if (row.currentCells[i] == [NSNull null]) {
 								BHFormViewCell *cell = [_dataSource formView:self cellForRow:row.rowIndex column:i];
 								cell.frame = row.rectsForCells[i];
-								CGRect rectForColumCell = row.rectsForCells[i];
 								row.currentCells[i] = cell;
 								[contentScrollView addSubview:cell];
 						}
