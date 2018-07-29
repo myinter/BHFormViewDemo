@@ -53,6 +53,9 @@
 	CGRect *_veryHighCellsRects;
 	NSInteger _veryHighCellsCount;
 	NSInteger _veryHighCellsContainerSize;
+	NSInteger _midVisibleRowIndex;
+	CGFloat _minCellSizeWidth;
+	CGFloat _minCellSizeHeight;
 }
 @property (nonatomic, weak) id<BHFormViewDataSource> dataSource;
 @property (nonatomic, weak) id<BHFormViewDelegate> delegate;

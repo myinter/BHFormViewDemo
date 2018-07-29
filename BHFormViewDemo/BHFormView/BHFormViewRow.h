@@ -28,5 +28,6 @@
 @property(nonatomic) NSInteger midVisibleColumn;
 @property(nonatomic) NSInteger minVisibleColumn;
 @property(nonatomic) NSInteger maxVisibleColumn;
+@property(nonatomic) BOOL hasVisibleCell;
 
 @end

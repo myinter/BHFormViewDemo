@@ -52,6 +52,8 @@ dispatch_queue_t SerialQueue = nil;
 	_veryHighCellsContainerSize = 512;
 	_veryHighCellsRects = (CGRect *)malloc(sizeof(CGRect) * 512);
 	_veryHighCellsCount = 0;
+	_minCellSizeHeight = 70.0;
+	_minCellSizeWidth = 70.0;
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview
@@ -84,13 +86,13 @@ dispatch_queue_t SerialQueue = nil;
 			usleep(16*1000);
 		}
 		isReloading = YES;
-		
 		NSMutableArray *newRows = [NSMutableArray arrayWithCapacity:rowCount];
 		NSInteger newRowCount = [_dataSource numberOfRowsInFormView:self];
-		CGFloat newMaxHeight = 0.0f;
-		CGFloat newMaxWidth = 0.0f;
+		CGFloat newMaxHeight = 0.0;
+		CGFloat newMaxWidth = 0.0;
+		CGFloat newMinCellSizeWidth = 70.0;
+		CGFloat newMinCellSizeHeight = 70.0;
 		_veryHighCellsCount = 0;
-		
 		CGFloat baseY = 0.0;
 		for (NSInteger rowIndex = 0; rowIndex != newRowCount; rowIndex++) {
 			CGFloat baseX = 0;
@@ -125,6 +127,10 @@ dispatch_queue_t SerialQueue = nil;
 				if ([_dataSource respondsToSelector:@selector(formView:heightForColumn:atRow:)]) {
 					columnHeight = [_dataSource formView:self heightForColumn:columnIndex atRow:rowIndex];
 				}
+				
+				newMinCellSizeWidth = MIN(columnWidth, newMinCellSizeWidth);
+				newMinCellSizeHeight = MIN(columnHeight, newMinCellSizeHeight);
+				
 				CGRect rectForColumCell = CGRectMake(baseX, baseY, columnWidth, columnHeight);
 				rectForColumCell = CheckCollisionWithRectsInFormerRows(_veryHighCellsRects,_veryHighCellsCount, rectForColumCell);
 				if (columnHeight > rowBaseHeight) {
@@ -169,6 +175,9 @@ dispatch_queue_t SerialQueue = nil;
 			_Rows = newRows;
 			maxHeight = newMaxHeight;
 			maxWidth = newMaxWidth;
+			_minCellSizeWidth = newMinCellSizeWidth / 4;
+			_minCellSizeHeight = newMinCellSizeHeight / 4;
+			_midVisibleRowIndex = rowCount / 2;
 			contentScrollView.contentSize = CGSizeMake(maxWidth, maxHeight);
 			[self refreshCells];
 		});
@@ -195,7 +204,7 @@ dispatch_queue_t SerialQueue = nil;
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     contentScrollView.contentSize = CGSizeMake(maxWidth, maxHeight);
-	if (ABS(_lastContentOffest.x - scrollView.contentOffset.x) + ABS(_lastContentOffest.y - scrollView.contentOffset.y) > 15.0) {
+	if (ABS(_lastContentOffest.x - scrollView.contentOffset.x) > _minCellSizeWidth || ABS(_lastContentOffest.y - scrollView.contentOffset.y) > _minCellSizeHeight) {
 		_lastContentOffest = scrollView.contentOffset;
 		[self refreshCells];
 	}
@@ -208,14 +217,136 @@ dispatch_queue_t SerialQueue = nil;
 	CGFloat visibleMinY = contentScrollView.contentOffset.y;
 	CGFloat visibleMaxX = visibleMinX + contentScrollView.bounds.size.width;
 	CGFloat visibleMaxY = visibleMinY + contentScrollView.bounds.size.height;
-		for (BHFormViewRow *row in _Rows) {
+	
+	BOOL hasLowerRowVisible = NO,hasUpperRowVisible = NO;
+	NSInteger upperIndex = _midVisibleRowIndex,lowerIndex = _midVisibleRowIndex + 1;
+
+	NSInteger maxVisibleRowIndex  = 0,minVisibleIndex = rowCount - 1;
+	
+	while (1) {
+		if (upperIndex != rowCount) {
+			BHFormViewRow *row = _Rows[upperIndex];
 			if ((row.beginX > visibleMaxX || row.maxX < visibleMinX) || (row.beginY > visibleMaxY || row.maxY < visibleMinY)) {
 				row.visible = NO;
+				if (hasUpperRowVisible) {
+					for (NSInteger rc = upperIndex; rc != rowCount; rc++) {
+						BHFormViewRow *currentRow = _Rows[rc];
+						if (currentRow.hasVisibleCell) {
+							NSInteger count = currentRow.currentCells.count;
+							NSMutableArray *array = currentRow.currentCells;
+							BOOL *columnVisibles = currentRow.columnsVisible;
+							for (NSInteger columnIndex = 0; columnIndex != count; columnIndex++) {
+								BHFormViewCell *cell = array[columnIndex];
+								columnVisibles[columnIndex] = NO;
+								if (cell != [NSNull null]) {
+									[cell removeFromSuperview];
+									[self addCellToReusePool:cell];
+									array[columnIndex] = [NSNull null];
+								}
+							}
+						}
+						currentRow.visible = NO;
+					}
+					upperIndex = rowCount - 1;
+				}
+				else
+				{
+					if (row.hasVisibleCell) {
+					//移除全部cell
+						NSInteger count = row.currentCells.count;
+						NSMutableArray *array = row.currentCells;
+						BOOL *columnVisibles = row.columnsVisible;
+						for (NSInteger columnIndex = 0; columnIndex != count; columnIndex++) {
+							BHFormViewCell *cell = array[columnIndex];
+							columnVisibles[columnIndex] = NO;
+							if (cell != [NSNull null]) {
+								[cell removeFromSuperview];
+								[self addCellToReusePool:cell];
+								array[columnIndex] = [NSNull null];
+							}
+						}
+					}
+				}
+				row.hasVisibleCell = NO;
 			}
-			else{
+			else
+			{
+				if (upperIndex  < minVisibleIndex) {
+					minVisibleIndex = upperIndex;
+				}
+				if (upperIndex > maxVisibleRowIndex) {
+					maxVisibleRowIndex = upperIndex;
+				}
+					hasUpperRowVisible = YES;
+					row.visible = YES;
+			}
+			upperIndex++;
+		}
+		
+		if (lowerIndex != -1) {
+			BHFormViewRow *row = _Rows[lowerIndex];
+			if ((row.beginX > visibleMaxX || row.maxX < visibleMinX) || (row.beginY > visibleMaxY || row.maxY < visibleMinY)) {
+				row.visible = NO;
+				if (hasLowerRowVisible) {
+					for (NSInteger rc = lowerIndex; rc >= 0; rc--) {
+						BHFormViewRow *currentRow = _Rows[rc];
+						if (currentRow.hasVisibleCell) {
+							NSInteger count = currentRow.currentCells.count;
+							NSMutableArray *array = currentRow.currentCells;
+							BOOL *columnVisibles = currentRow.columnsVisible;
+							int nullCount = 0;
+							for (NSInteger columnIndex = 0; columnIndex != count; columnIndex++) {
+								BHFormViewCell *cell = array[columnIndex];
+								columnVisibles[columnIndex] = NO;
+								if (cell != [NSNull null]) {
+									[cell removeFromSuperview];
+									[self addCellToReusePool:cell];
+									array[columnIndex] = [NSNull null];
+								}
+							}
+						}
+						currentRow.visible = NO;
+					}
+					lowerIndex = 0;
+				}
+				else{
+					if (row.hasVisibleCell) {
+						//移除全部cell
+						NSInteger count = row.currentCells.count;
+						NSMutableArray *array = row.currentCells;
+						BOOL *columnVisibles = row.columnsVisible;
+						for (NSInteger columnIndex = 0; columnIndex != count; columnIndex++) {
+							BHFormViewCell *cell = array[columnIndex];
+							columnVisibles[columnIndex] = NO;
+							if (cell != [NSNull null]) {
+								[cell removeFromSuperview];
+								[self addCellToReusePool:cell];
+								array[columnIndex] = [NSNull null];
+							}
+						}
+					}
+				}
+				row.hasVisibleCell = NO;
+			}
+			else
+			{
+				if (lowerIndex  < minVisibleIndex) {
+					minVisibleIndex = lowerIndex;
+				}
+				if (lowerIndex > maxVisibleRowIndex) {
+					maxVisibleRowIndex = lowerIndex;
+				}
+				hasLowerRowVisible = YES;
 				row.visible = YES;
 			}
+			lowerIndex--;
 		}
+		
+		if (upperIndex == rowCount && lowerIndex == -1) {
+			break;
+		}
+	}
+	_midVisibleRowIndex = (minVisibleIndex + maxVisibleRowIndex) / 2;
 		for (BHFormViewRow *row in _Rows) {
 			NSInteger visibleMinIndex = NSNotFound;
 			NSInteger visibleMaxIndex = 0;
@@ -231,7 +362,6 @@ dispatch_queue_t SerialQueue = nil;
 						visible = isVisibleRect(rects[lowerIndex], visibleMinX, visibleMinY, visibleMaxX, visibleMaxY);
 						columnVisibles[lowerIndex] = visible;
 						if (visible) {
-							
 							row.visible = YES;
 							hasLowerVisible = YES;
 							if (lowerIndex < visibleMinIndex) {
@@ -246,17 +376,18 @@ dispatch_queue_t SerialQueue = nil;
 								cell.frame = row.rectsForCells[lowerIndex];
 								row.currentCells[lowerIndex] = cell;
 								[contentScrollView addSubview:cell];
+								row.hasVisibleCell = YES;
 							}
 						}
 						else if (hasLowerVisible){
-							for (int columnIndex = lowerIndex; columnIndex != -1; columnIndex--) {
+							for (NSInteger columnIndex = lowerIndex; columnIndex != -1; columnIndex--) {
 								BHFormViewCell *cell = (BHFormViewCell *)row.currentCells[columnIndex];
 								if (cell != [NSNull null]) {
 									[cell removeFromSuperview];
 									[self addCellToReusePool:cell];
 									row.currentCells[columnIndex] = [NSNull null];
 								}
-								columnVisibles[columnIndex] = NO;
+//								columnVisibles[columnIndex] = NO;
 							}
 							//隐藏的cell移入重用池
 							lowerIndex = 0;
@@ -288,6 +419,7 @@ dispatch_queue_t SerialQueue = nil;
 								cell.frame = row.rectsForCells[upperIndex];
 								row.currentCells[upperIndex] = cell;
 								[contentScrollView addSubview:cell];
+								row.hasVisibleCell = YES;
 							}
 						}else if (hasUpperVisible){
 							for (NSInteger columnIndex = upperIndex; columnIndex != columnCount; columnIndex++) {
@@ -321,27 +453,15 @@ dispatch_queue_t SerialQueue = nil;
 						upperIndex++;
 					}
 				}
+				row.minVisibleColumn = visibleMinIndex;
+				row.maxVisibleColumn = visibleMaxIndex;
+				row.midVisibleColumn = (visibleMinIndex + visibleMaxIndex) / 2;
 			}
 			else{
-				//移除全部cell
-					NSInteger count = row.currentCells.count;
-					NSMutableArray *array = row.currentCells;
-					BOOL *columnVisibles = row.columnsVisible;
-					for (NSInteger columnIndex = 0; columnIndex != count; columnIndex++) {
-						BHFormViewCell *cell = array[columnIndex];
-						columnVisibles[columnIndex] = NO;
-						if (cell != [NSNull null]) {
-								[cell removeFromSuperview];
-								[self addCellToReusePool:cell];
-							array[columnIndex] = [NSNull null];
-						}
-					}
-				visibleMinIndex = 0;
-				visibleMaxIndex = 0;
+				visibleMinIndex = rowCount / 2;
+				visibleMaxIndex = rowCount / 2;
+				row.midVisibleColumn = rowCount / 2;
 			}
-			row.minVisibleColumn = visibleMinIndex;
-			row.maxVisibleColumn = visibleMaxIndex;
-			row.midVisibleColumn = (visibleMinIndex + visibleMaxIndex) / 2;
 		}
 	//根据当前可视的cell重新填写内容。
 }
