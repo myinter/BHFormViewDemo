@@ -63,7 +63,7 @@
 -(BHFormViewCell *)formView:(BHFormView *)formView cellForRow:(NSInteger)row column:(NSInteger)column
 {
 	static NSString *reuseId = @"aaa";
-	FormViewCell *cell = [formView cellForReuseId:reuseId];
+	FormViewCell *cell = (FormViewCell *)[formView cellForReuseId:reuseId];
 	if (cell == nil) {
 		cell = [FormViewCell cellFromXIB];
 		cell.reuseIdentifier = reuseId;

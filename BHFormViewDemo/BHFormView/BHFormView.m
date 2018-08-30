@@ -226,7 +226,7 @@ dispatch_queue_t SerialQueue = nil;
 	while (1) {
 		if (upperIndex != rowCount) {
 			BHFormViewRow *row = _Rows[upperIndex];
-			if ((row.beginX > visibleMaxX || row.maxX < visibleMinX) || (row.beginY > visibleMaxY || row.maxY < visibleMinY)) {
+			if (row.hasVeryHighCell || (row.beginX > visibleMaxX || row.maxX < visibleMinX) || (row.beginY > visibleMaxY || row.maxY < visibleMinY)) {
 				row.visible = NO;
 				if (hasUpperRowVisible) {
 					for (NSInteger rc = upperIndex; rc != rowCount; rc++) {
@@ -285,7 +285,7 @@ dispatch_queue_t SerialQueue = nil;
 		
 		if (lowerIndex != -1) {
 			BHFormViewRow *row = _Rows[lowerIndex];
-			if ((row.beginX > visibleMaxX || row.maxX < visibleMinX) || (row.beginY > visibleMaxY || row.maxY < visibleMinY)) {
+			if (row.hasVeryHighCell || (row.beginX > visibleMaxX || row.maxX < visibleMinX) || (row.beginY > visibleMaxY || row.maxY < visibleMinY)) {
 				row.visible = NO;
 				if (hasLowerRowVisible) {
 					for (NSInteger rc = lowerIndex; rc >= 0; rc--) {
@@ -562,6 +562,12 @@ dispatch_queue_t SerialQueue = nil;
 	}
 }
 
+- (void)setCellScale:(CGFloat)cellScale
+{
+//    for (BHFormViewRow *row in _Rows) {
+//        row.
+//    }
+}
 - (void)itemClicked:(UIButton *)sender
 {
     if ([_delegate respondsToSelector:@selector(formView:didTapColumn:inRow:)]) {

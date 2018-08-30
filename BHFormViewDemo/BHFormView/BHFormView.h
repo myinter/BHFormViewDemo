@@ -60,6 +60,8 @@
 @property (nonatomic, weak) id<BHFormViewDataSource> dataSource;
 @property (nonatomic, weak) id<BHFormViewDelegate> delegate;
 @property (nonatomic, assign) BOOL thickBorder;
+//默认为1，用于等比例缩放所有cell的位置的大小
+@property (nonatomic, assign) CGFloat cellScale;
 - (void)reloadData;
 -(BHFormViewCell *)cellForReuseId:(NSString *)reuseId;
 @end
