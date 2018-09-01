@@ -7,7 +7,6 @@
 //
 
 #import "BHFormView.h"
-#import "UIImage+FuntionExtention.h"
 
 #ifdef DEBUG
 #define NSLog(...) NSLog(__VA_ARGS__)
