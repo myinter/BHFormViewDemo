@@ -40,28 +40,29 @@
 - (void)formView:(BHFormView *)formView didTapColumn:(NSInteger)column inRow:(NSInteger)row;
 @end
 @class BHFormItem;
-@interface BHFormView : UIView<UIScrollViewDelegate>
+@interface BHFormView : UIScrollView<UIScrollViewDelegate>
 {
-    UIScrollView *contentScrollView;
     CGFloat margin;
     NSInteger rowCount;
     CGFloat maxWidth;
     CGFloat maxHeight;
-	NSMutableArray<BHFormViewRow *> *_Rows;
-	NSMutableDictionary *_reusePoolDict;
-	CGPoint _lastContentOffest;
-	CGRect *_veryHighCellsRects;
-	NSInteger _veryHighCellsCount;
-	NSInteger _veryHighCellsContainerSize;
-	NSInteger _midVisibleRowIndex;
-	CGFloat _minCellSizeWidth;
-	CGFloat _minCellSizeHeight;
+    NSMutableArray<BHFormViewRow *> *_Rows;
+    NSMutableDictionary *_reusePoolDict;
+    CGPoint _lastContentOffest;
+    CGRect *_veryHighCellsRects;
+    NSInteger _veryHighCellsCount;
+    NSInteger _veryHighCellsContainerSize;
+    NSInteger _midVisibleRowIndex;
+    CGFloat _minCellSizeWidth;
+    CGFloat _minCellSizeHeight;
 }
-@property (nonatomic, weak) id<BHFormViewDataSource> dataSource;
-@property (nonatomic, weak) id<BHFormViewDelegate> delegate;
-@property (nonatomic, assign) BOOL thickBorder;
+@property (nonatomic, weak) IBOutlet id<BHFormViewDataSource> dataSource;
+@property (nonatomic, weak) IBOutlet id<BHFormViewDelegate> delegate;
+@property (nonatomic) BOOL  isReloading;
 //默认为1，用于等比例缩放所有cell的位置的大小
 @property (nonatomic, assign) CGFloat cellScale;
 - (void)reloadData;
+/*只重新加载当前单元格的信息，而不会重新加载布局信息*/
+- (void)reloadDataWithoutNewItemsAndLayoutInfos;
 -(BHFormViewCell *)cellForReuseId:(NSString *)reuseId;
 @end

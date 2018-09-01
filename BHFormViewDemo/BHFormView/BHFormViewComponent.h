@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include "BHFormViewRow.h"
 #include <CoreGraphics/CoreGraphics.h>
-BOOL valueBetween(CGFloat value,CGFloat begin,CGFloat end);
-BOOL isVisibleRect(CGRect rect,CGFloat beginX,CGFloat beginY,CGFloat endX,CGFloat endY);
-CGRect CheckCollisionWithRectsInFormerRows(CGRect *veryHighCellsRects,NSInteger veryHighCellsCount,CGRect objRect);
+extern inline BOOL valueBetween(CGFloat value,CGFloat begin,CGFloat end);
+extern inline BOOL isVisibleRect(CGRect rect,CGFloat beginX,CGFloat beginY,CGFloat endX,CGFloat endY);
+extern inline CGRect CheckCollisionWithRectsInFormerRows(CGRect *veryHighCellsRects,NSInteger veryHighCellsCount,CGRect objRect);
 #endif /* BHFormViewComponent_h */

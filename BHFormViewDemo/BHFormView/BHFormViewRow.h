@@ -29,5 +29,6 @@
 @property(nonatomic) NSInteger minVisibleColumn;
 @property(nonatomic) NSInteger maxVisibleColumn;
 @property(nonatomic) BOOL hasVisibleCell;
+@property(nonatomic) CGFloat standardHeightForColumn;
 
 @end
