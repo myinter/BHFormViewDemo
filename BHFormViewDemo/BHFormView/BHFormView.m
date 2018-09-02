@@ -98,7 +98,7 @@ dispatch_queue_t SerialQueue = nil;
             }
             row.columnCount = columnCount;
             row.midVisibleColumn = columnCount / 2;
-            CGFloat rowBaseHeight = [_dataSource formView:self heightForRow:rowCount];
+            CGFloat rowBaseHeight = [_dataSource formView:self heightForRow:rowIndex];
             row.standardHeightForColumn = rowBaseHeight;
             row.hasVeryHighCell = NO;
             for (int columnIndex = 0; columnIndex!= columnCount; columnIndex++) {
