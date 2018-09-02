@@ -200,25 +200,49 @@ dispatch_queue_t SerialQueue = nil;
 -(void)setContentOffset:(CGPoint)contentOffset
 {
     [super setContentOffset:contentOffset];
+    _lastContentOffest = contentOffset;
+    [self refreshCells];
     if (ABS(_lastContentOffest.x - contentOffset.x) > _minCellSizeWidth || ABS(_lastContentOffest.y - contentOffset.y) > _minCellSizeHeight) {
-        _lastContentOffest = contentOffset;
-        [self refreshCells];
+    }
+}
+
+- (void)reloadDataWithoutNewItemsAndLayoutInfos{
+    NSInteger count = _Rows.count;
+    if (count!=0) {
+        for (NSInteger index = 0; index != count; index++) {
+            BHFormViewRow *row = _Rows[index];
+            NSInteger columnCount  = row.columnCount;
+            NSArray *cells = row.currentCells;
+                if (row.visible && columnCount) {
+                        BOOL *visibles = row.columnsVisible;
+                        for (NSInteger columnIndex = 0; columnIndex != columnCount; columnIndex++) {
+                            if (visibles[columnIndex]) {
+                                BHFormViewCell *cell = cells[columnIndex];
+                                if (cell != (BHFormViewCell *)[NSNull null]) {
+                                    [cell removeFromSuperview];
+                                    [self addCellToReusePool:cell];
+                                }
+                                cell = [_dataSource formView:self cellForRow:row.rowIndex column:columnIndex];
+                                row.currentCells[columnIndex] = cell;
+                                [self addSubview:cell];
+                                cell.frame = row.rectsForCells[columnIndex];
+                            }
+                        }
+                }
+        }
     }
 }
 
 /*刷新当前的Cell*/
 -(void)refreshCells
 {
-    
     CGPoint contentOffset = self.contentOffset;
     CGFloat visibleMinX = contentOffset.x;
     CGFloat visibleMinY = contentOffset.y;
     CGFloat visibleMaxX = visibleMinX + self.bounds.size.width;
     CGFloat visibleMaxY = visibleMinY + self.bounds.size.height;
-    
     BOOL hasLowerRowVisible = NO,hasUpperRowVisible = NO;
     NSInteger upperIndex = MIN(_midVisibleRowIndex, rowCount),lowerIndex = _midVisibleRowIndex + 1;
-    
     NSInteger maxVisibleRowIndex  = 0,minVisibleIndex = rowCount - 1;
     
     while (1) {
@@ -373,7 +397,6 @@ dispatch_queue_t SerialQueue = nil;
             BOOL *columnVisibles = row.columnsVisible;
             NSInteger lowerIndex = row.midVisibleColumn,upperIndex = MIN(lowerIndex + 1, columnCount -1);
 //            printf("\n row.midVisibleColumn %d",row.midVisibleColumn);
-            
             BOOL hasLowerVisible = NO,hasUpperVisible = NO;
             while (1) {
                 BOOL visible = NO;

@@ -11,6 +11,7 @@
 @interface ViewController : UIViewController<BHFormViewDataSource,BHFormViewDelegate>
 {
   IBOutlet  BHFormView *mFormView;
+    NSInteger count;
 }
 
 @end

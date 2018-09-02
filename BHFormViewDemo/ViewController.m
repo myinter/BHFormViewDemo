@@ -68,9 +68,8 @@
 		cell = [FormViewCell cellFromXIB];
 		cell.reuseIdentifier = reuseId;
 	}
-	cell.titleLabel.text = [NSString stringWithFormat:@"%d %d",row,column];
+	cell.titleLabel.text = [NSString stringWithFormat:@"%d %d",row + count,column];
 	cell.titleLabel.backgroundColor = (row % 2) ? (column %2 ? [UIColor grayColor] : [UIColor greenColor]) : (column %2 ? [UIColor darkGrayColor] : [UIColor blueColor]);
-	
 	return cell;
 }
 
@@ -104,7 +103,9 @@
 }
 
 - (IBAction)next:(id)sender {
-    [self.navigationController pushViewController:[ViewController2 new] animated:YES];
+//    [self.navigationController pushViewController:[ViewController2 new] animated:YES];
+    count++;
+    [mFormView reloadDataWithoutNewItemsAndLayoutInfos];
 }
 
 
