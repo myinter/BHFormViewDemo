@@ -18,9 +18,6 @@
 
 
 //单元格重用容器
-static NSMutableSet *reuseCells = nil;
-dispatch_queue_t SerialQueue = nil;
-
 @implementation BHFormView
 
 /*
@@ -45,9 +42,6 @@ dispatch_queue_t SerialQueue = nil;
 }
 
 -(void)initialize{
-    if (SerialQueue == nil) {
-        SerialQueue = dispatch_queue_create("BHFormViewSerial", DISPATCH_QUEUE_SERIAL);
-    }
     _veryHighCellsContainerSize = 512;
     _veryHighCellsRects = (CGRect *)malloc(sizeof(CGRect) * 256);
     _veryHighCellsCount = 0;
