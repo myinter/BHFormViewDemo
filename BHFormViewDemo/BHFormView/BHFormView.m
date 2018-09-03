@@ -42,7 +42,7 @@
 }
 
 -(void)initialize{
-    _veryHighCellsContainerSize = 512;
+    _veryHighCellsContainerSize = 256;
     _veryHighCellsRects = (CGRect *)malloc(sizeof(CGRect) * 256);
     _veryHighCellsCount = 0;
     _minCellSizeHeight = 70.0;
