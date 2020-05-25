@@ -66,7 +66,7 @@
         cell.reuseIdentifier = reuseId;
     }
     
-    NSString *urlString = _imgsUrl[row % 3];
+    NSString *urlString = _imgsUrl[column % 3];
     
     if ([_imgsMemCache objectForKey:urlString]) {
         cell.imageView.image = [_imgsMemCache objectForKey:urlString];

@@ -138,7 +138,7 @@
                 newMinCellSizeHeight = MIN(itemHeight, newMinCellSizeHeight);
                 
                 CGRect rectForItemCell = CGRectMake(baseX, baseY, itemWidth, itemHeight);
-                rectForItemCell = CheckCollisionWithRectsInLinesRows(_sizeOverflowCellsRects,_sizeOverflowCellsCount, rectForItemCell);
+                rectForItemCell = CheckCollisionWithRectsInLines(_sizeOverflowCellsRects,_sizeOverflowCellsCount, rectForItemCell);
                 
                 CGFloat itemSize = 0.0;
                 
