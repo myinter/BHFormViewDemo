@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "ViewController2.h"
 #import "FormViewCell.h"
-
+#import "VerticalWaterfallViewController.h"
 
 @interface ViewController ()
 
@@ -39,23 +39,30 @@
     // Dispose of any resources that can be recreated.
 }
 
+
+- (IBAction)gotoVerticalWaterfall:(id)sender {
+    
+    [self.navigationController pushViewController:[VerticalWaterfallViewController new] animated:YES];
+}
+
+
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     [mFormView reloadData];
 }
 
--(NSInteger)formView:(BHFormView *)formView numberOfColumnsInRow:(NSInteger)row
+-(NSInteger)formView:(BHFormView *)formView numberOfItemsInLine:(NSInteger)row
 {
     return 200;
 }
 
--(NSInteger)formViewColumnsInRow:(BHFormView *)formView
+-(NSInteger)formViewItemsInLine:(BHFormView *)formView
 {
     return 20;
 }
 
--(NSInteger)numberOfRowsInFormView:(BHFormView *)formView
+-(NSInteger)numberOfLinesInFormView:(BHFormView *)formView
 {
     return 200;
 }
@@ -73,7 +80,7 @@
 	return cell;
 }
 
--(CGFloat)formView:(BHFormView *)formView heightForRow:(NSInteger)row
+-(CGFloat)formView:(BHFormView *)formView sizeForLine:(NSInteger)row
 {
    return formView.frame.size.height / 3;
 }

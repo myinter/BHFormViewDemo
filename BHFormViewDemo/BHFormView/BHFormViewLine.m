@@ -6,27 +6,27 @@
 //  Copyright © 2018年 熊伟. All rights reserved.
 //
 
-#import "BHFormViewRow.h"
+#import "BHFormViewLine.h"
 
-@implementation BHFormViewRow
+@implementation BHFormViewLine
 
 -(void)dealloc{
 	if (_rectsForCells) {
 		free(_rectsForCells);
 	}
-	if (_columnsVisible) {
-		free(_columnsVisible);
+	if (_itemsVisibilities) {
+		free(_itemsVisibilities);
 	}
 }
 
--(void)setColumnCount:(NSInteger)columnCount{
+-(void)setItemCount:(NSInteger)columnCount{
 	if (columnCount > _rectsArraySize) {
 		_rectsArraySize = columnCount + 10;
 		if (_rectsForCells) {
 			free(_rectsForCells);
 		}
-		if (_columnsVisible) {
-			free(_columnsVisible);
+		if (_itemsVisibilities) {
+			free(_itemsVisibilities);
 		}
 		if (_currentCells) {
 			[_currentCells removeAllObjects];
@@ -35,14 +35,14 @@
 			_currentCells = [NSMutableArray arrayWithCapacity:_rectsArraySize];
 		}
 		_rectsForCells = (CGRect *)malloc(sizeof(CGRect) * _rectsArraySize);
-		_columnsVisible = (BOOL *)malloc(sizeof(BOOL) * _rectsArraySize);
-		memset(_columnsVisible, 0, _rectsArraySize);
+		_itemsVisibilities = (BOOL *)malloc(sizeof(BOOL) * _rectsArraySize);
+		memset(_itemsVisibilities, 0, _rectsArraySize);
 		for (int i = 0; i != _rectsArraySize; i++) {
 			[_currentCells addObject:[NSNull null]];
 		}
 	}
-	_maxVisibleColumn = columnCount;
-	_minVisibleColumn = 0;
-	_columnCount = columnCount;
+	_maxVisibleItem = columnCount;
+	_minVisibleItem = 0;
+	_itemCount = columnCount;
 }
 @end

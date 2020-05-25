@@ -43,8 +43,8 @@
 
 -(void)initialize{
     _veryHighCellsContainerSize = 256;
-    _veryHighCellsRects = (CGRect *)malloc(sizeof(CGRect) * 256);
-    _veryHighCellsCount = 0;
+    _sizeOverflowCellsRects = (CGRect *)malloc(sizeof(CGRect) * 256);
+    _sizeOverflowCellsCount = 0;
     _minCellSizeHeight = 70.0;
     _minCellSizeWidth = 70.0;
     self.clipsToBounds = YES;
@@ -61,135 +61,212 @@
 
 -(void)reloadData
 {
-    //所有行的单元格全部放入重用池 Put all the cells into reusepool
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        if (_isReloading) {
-            return ;
-        }
-        _isReloading = YES;
-        NSMutableArray *newRows = [NSMutableArray arrayWithCapacity:rowCount];
-        NSInteger newRowCount = [_dataSource numberOfRowsInFormView:self];
+    //所有行的单元格全部放入重用池 Put all the cells into reusePool
+        NSMutableArray *newRows = [NSMutableArray arrayWithCapacity:lineCount];
+        NSInteger newLineCount = [_dataSource numberOfLinesInFormView:self];
         CGFloat newMaxHeight = 0.0;
         CGFloat newMaxWidth = 0.0;
         CGFloat newMinCellSizeWidth = 70.0;
         CGFloat newMinCellSizeHeight = 70.0;
-        _veryHighCellsCount = 0;
+        _sizeOverflowCellsCount = 0;
         CGFloat baseY = 0.0;
-        for (NSInteger rowIndex = 0; rowIndex != newRowCount; rowIndex++) {
-            CGFloat baseX = 0;
-            BHFormViewRow *row = [BHFormViewRow new];
-            row.rowIndex = rowIndex;
-            row.beginX = MAXFLOAT;
-            row.beginY = MAXFLOAT;
-            NSInteger columnCount = 0;
-            if ([_dataSource respondsToSelector:@selector(formView:numberOfColumnsInRow:)]) {
-                columnCount = [_dataSource formView:self numberOfColumnsInRow:rowIndex];
+        CGFloat baseX = 0;
+        
+        //获取当前的布局模式，行优先，还是列优先
+        if ([_dataSource respondsToSelector:@selector(formViewLayoutMode:)]) {
+            _currentLayoutMode = [_dataSource formViewLayoutMode:self];
+        }
+        else
+        {
+            //默认使用行优先模式
+            _currentLayoutMode = BHRowFirstMode;
+        }
+        
+        for (NSInteger lineIndex = 0; lineIndex != newLineCount; lineIndex++) {
+            switch (_currentLayoutMode) {
+                case BHColumnFirstMode:
+                {
+                    //列优先模式，每一列Y重新计算
+                    baseY = 0.0;
+                }
+                    break;
+                case BHRowFirstMode:
+                {
+                    //行优先模式,每一行X值重新计算
+                    baseX = 0.0;
+                }
+                    break;
+                default:
+                    break;
+            }
+            
+            BHFormViewLine *line = [BHFormViewLine new];
+            line.lineIndex = lineIndex;
+            line.beginX = MAXFLOAT;
+            line.beginY = MAXFLOAT;
+            NSInteger itemCount = 0;
+            if ([_dataSource respondsToSelector:@selector(formView:numberOfItemsInLine:)]) {
+                itemCount = [_dataSource formView:self numberOfItemsInLine:lineIndex];
             }
             else{
-                if ([_dataSource respondsToSelector:@selector(formViewColumnsInRow:)]) {
-                    columnCount = [_dataSource formViewColumnsInRow:self];
+                if ([_dataSource respondsToSelector:@selector(formViewItemsInLine:)]) {
+                    itemCount = [_dataSource formViewItemsInLine:self];
                 }
             }
-            row.columnCount = columnCount;
-            row.midVisibleColumn = columnCount / 2;
-            CGFloat rowBaseHeight = [_dataSource formView:self heightForRow:rowIndex];
-            row.standardHeightForColumn = rowBaseHeight;
-            row.hasVeryHighCell = NO;
-            for (int columnIndex = 0; columnIndex!= columnCount; columnIndex++) {
-                CGFloat columnHeight = rowBaseHeight;
-                CGFloat columnWidth = 0.0;
+            
+            line.itemCount = itemCount;
+            line.midVisibleItemIndex = itemCount / 2;
+            CGFloat lineBaseSize = [_dataSource formView:self sizeForLine:lineIndex];
+            line.standardSizeForColumn = lineBaseSize;
+            line.hasCrossLineCell = NO;
+            for (int itemIndex = 0; itemIndex!= itemCount; itemIndex++) {
+                CGFloat itemHeight = lineBaseSize;
+                CGFloat itemWidth = 0.0;
                 if ([_dataSource respondsToSelector:@selector(formView:widthForColumn:atRow:)]) {
-                    columnWidth = [_dataSource formView:self widthForColumn:columnIndex atRow:row.rowIndex];
+                    itemWidth = [_dataSource formView:self widthForColumn:itemIndex atRow:line.lineIndex];
                 }
                 else{
                     if ([_dataSource respondsToSelector:@selector(formView:widthForColumn:)]) {
-                        columnWidth = [_dataSource formView:self widthForColumn:columnIndex];
+                        itemWidth = [_dataSource formView:self widthForColumn:itemIndex];
                     }
                 }
                 if ([_dataSource respondsToSelector:@selector(formView:heightForColumn:atRow:)]) {
-                    columnHeight = [_dataSource formView:self heightForColumn:columnIndex atRow:rowIndex];
+                    itemHeight = [_dataSource formView:self heightForColumn:itemIndex atRow:lineIndex];
                 }
                 
-                newMinCellSizeWidth = MIN(columnWidth, newMinCellSizeWidth);
-                newMinCellSizeHeight = MIN(columnHeight, newMinCellSizeHeight);
+                newMinCellSizeWidth = MIN(itemWidth, newMinCellSizeWidth);
+                newMinCellSizeHeight = MIN(itemHeight, newMinCellSizeHeight);
                 
-                CGRect rectForColumCell = CGRectMake(baseX, baseY, columnWidth, columnHeight);
-                rectForColumCell = CheckCollisionWithRectsInFormerRows(_veryHighCellsRects,_veryHighCellsCount, rectForColumCell);
-                if (columnHeight > rowBaseHeight) {
-                    row.hasVeryHighCell = YES;
-                    if (_veryHighCellsCount == _veryHighCellsContainerSize) {
-                        CGRect *newRectContainingPointer = (CGRect *)malloc(sizeof(CGRect) * (_veryHighCellsContainerSize*=2));
-                        memcpy(newRectContainingPointer, _veryHighCellsRects, _veryHighCellsCount * sizeof(CGRect));
-                        free(_veryHighCellsRects);
-                        _veryHighCellsRects = newRectContainingPointer;
+                CGRect rectForItemCell = CGRectMake(baseX, baseY, itemWidth, itemHeight);
+                rectForItemCell = CheckCollisionWithRectsInLinesRows(_sizeOverflowCellsRects,_sizeOverflowCellsCount, rectForItemCell);
+                
+                CGFloat itemSize = 0.0;
+                
+                switch (_currentLayoutMode) {
+                    case BHColumnFirstMode:
+                    {
+                        //列优先模式
+                        itemSize = itemWidth;
                     }
-                    _veryHighCellsRects[_veryHighCellsCount] = rectForColumCell;
-                    _veryHighCellsCount++;
+                        break;
+                    case BHRowFirstMode:
+                    {
+                        //行优先模式
+                        itemSize = itemHeight;
+                    }
+                        break;
+                    default:
+                        
+                        break;
                 }
-                row.rectsForCells[columnIndex] = rectForColumCell;
-                if (rectForColumCell.origin.y < row.beginY) {
-                    row.beginY = rectForColumCell.origin.y;
+                if (itemSize > lineBaseSize) {
+                    line.hasCrossLineCell = YES;
+                    if (_sizeOverflowCellsCount == _veryHighCellsContainerSize) {
+                        CGRect *newRectContainingPointer = (CGRect *)malloc(sizeof(CGRect) * (_veryHighCellsContainerSize*=2));
+                        memcpy(newRectContainingPointer, _sizeOverflowCellsRects, _sizeOverflowCellsCount * sizeof(CGRect));
+                        free(_sizeOverflowCellsRects);
+                        _sizeOverflowCellsRects = newRectContainingPointer;
+                    }
+                    _sizeOverflowCellsRects[_sizeOverflowCellsCount] = rectForItemCell;
+                    _sizeOverflowCellsCount++;
                 }
-                if (rectForColumCell.origin.x < row.beginX) {
-                    row.beginX = rectForColumCell.origin.x;
+                line.rectsForCells[itemIndex] = rectForItemCell;
+                if (rectForItemCell.origin.y < line.beginY) {
+                    line.beginY = rectForItemCell.origin.y;
                 }
-                CGFloat maxX = CGRectGetMaxX(rectForColumCell);
-                baseX = maxX;
-                if (row.maxX < maxX) {
-                    row.maxX = maxX;
+                if (rectForItemCell.origin.x < line.beginX) {
+                    line.beginX = rectForItemCell.origin.x;
+                }
+                CGFloat maxX = CGRectGetMaxX(rectForItemCell);
+                CGFloat maxY = CGRectGetMaxY(rectForItemCell);
+                switch (_currentLayoutMode) {
+                    case BHColumnFirstMode:
+                    {
+                        //列优先模式
+                        baseY = maxY;
+                    }
+                        break;
+                    case BHRowFirstMode:
+                    {
+                        //行优先模式
+                        baseX = maxX;
+                    }
+                        break;
+                    default:
+                        break;
+                }
+
+                if (line.maxX < maxX) {
+                    line.maxX = maxX;
                 }
                 if (newMaxWidth < maxX) {
                     newMaxWidth = maxX;
                 }
-                CGFloat maxY = CGRectGetMaxY(rectForColumCell);
-                if (row.maxY < maxY) {
-                    row.maxY = maxY;
+                if (line.maxY < maxY) {
+                    line.maxY = maxY;
                 }
                 if (newMaxHeight < maxY) {
                     newMaxHeight = maxY;
                 }
             }
-            [newRows addObject:row];
-            baseY += rowBaseHeight;
+            [newRows addObject:line];
+            
+            switch (_currentLayoutMode) {
+                case BHColumnFirstMode:
+                {
+                    //列优先模式，每一列Y重新计算
+                    baseX += lineBaseSize;
+                }
+                    break;
+                case BHRowFirstMode:
+                {
+                    //行优先模式,每一行X值重新计算
+                    baseY += lineBaseSize;
+                }
+                    break;
+                default:
+                    break;
+            }
+
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            for (BHFormViewRow *row in _Rows) {
-                for (BHFormViewCell *cell in row.currentCells) {
+            //原有单元格全部回收到重用池
+            for (BHFormViewLine *line in _lines) {
+                for (BHFormViewCell *cell in line.currentCells) {
                     if ((NSNull *)cell != [NSNull null]) {
                         [cell removeFromSuperview];
                         [self addCellToReusePool:cell];
                     }
                 }
             }
-            rowCount = newRowCount;
-            _Rows = newRows;
+            lineCount = newLineCount;
+            _lines = newRows;
             maxHeight = newMaxHeight;
             maxWidth = newMaxWidth;
             _minCellSizeWidth = newMinCellSizeWidth / 4;
             _minCellSizeHeight = newMinCellSizeHeight / 4;
-            _midVisibleRowIndex = rowCount / 2;
+            _midVisibleLineIndex = lineCount / 2;
             self.contentSize = CGSizeMake(maxWidth, maxHeight);
             [self refreshCells];
             _isReloading = NO;
         });
-    });
 }
 
--(CGRect)checkCollisionWithFormerRects:(CGRect)objRect{
-    for (BHFormViewRow *row in _Rows) {
-        if (!row.hasVeryHighCell) {
-            continue;
-        }
-        CGRect *rects = row.rectsForCells;
-        for (int i = 0; i != row.columnCount; i++) {
-            CGRect rect = rects[i];
-            if (CGRectIntersectsRect(rect, objRect)) {
-                objRect = CGRectMake(rect.origin.x + rect.size.width, objRect.origin.y, objRect.size.width, objRect.size.height);
-            }
-        }
-    }
-    return objRect;
-}
+//-(CGRect)checkCollisionWithFormerRects:(CGRect)objRect{
+//    for (BHFormViewRow *row in _Rows) {
+//        if (!row.hasVeryHighCell) {
+//            continue;
+//        }
+//        CGRect *rects = row.rectsForCells;
+//        for (int i = 0; i != row.columnCount; i++) {
+//            CGRect rect = rects[i];
+//            if (CGRectIntersectsRect(rect, objRect)) {
+//                objRect = CGRectMake(rect.origin.x + rect.size.width, objRect.origin.y, objRect.size.width, objRect.size.height);
+//            }
+//        }
+//    }
+//    return objRect;
+//}
 
 -(void)setContentOffset:(CGPoint)contentOffset
 {
@@ -201,14 +278,14 @@
 }
 
 - (void)reloadDataWithoutNewItemsAndLayoutInfos{
-    NSInteger count = _Rows.count;
+    NSInteger count = _lines.count;
     if (count!=0) {
         for (NSInteger index = 0; index != count; index++) {
-            BHFormViewRow *row = _Rows[index];
-            NSInteger columnCount  = row.columnCount;
+            BHFormViewLine *row = _lines[index];
+            NSInteger columnCount  = row.itemCount;
             NSArray *cells = row.currentCells;
                 if (row.visible && columnCount) {
-                        BOOL *visibles = row.columnsVisible;
+                        BOOL *visibles = row.itemsVisibilities;
                         for (NSInteger columnIndex = 0; columnIndex != columnCount; columnIndex++) {
                             if (visibles[columnIndex]) {
                                 BHFormViewCell *cell = cells[columnIndex];
@@ -216,7 +293,7 @@
                                     [cell removeFromSuperview];
                                     [self addCellToReusePool:cell];
                                 }
-                                cell = [_dataSource formView:self cellForRow:row.rowIndex column:columnIndex];
+                                cell = [_dataSource formView:self cellForRow:row.lineIndex column:columnIndex];
                                 row.currentCells[columnIndex] = cell;
                                 [self addSubview:cell];
                                 cell.frame = row.rectsForCells[columnIndex];
@@ -227,7 +304,7 @@
     }
 }
 
-/*刷新当前的Cell*/
+/*刷新当前的Cell，将当前可见的cell填写上来*/
 -(void)refreshCells
 {
     CGPoint contentOffset = self.contentOffset;
@@ -235,171 +312,58 @@
     CGFloat visibleMinY = contentOffset.y;
     CGFloat visibleMaxX = visibleMinX + self.bounds.size.width;
     CGFloat visibleMaxY = visibleMinY + self.bounds.size.height;
-    BOOL hasLowerRowVisible = NO,hasUpperRowVisible = NO;
-    NSInteger upperIndex = MIN(_midVisibleRowIndex, rowCount),lowerIndex = _midVisibleRowIndex + 1;
-    NSInteger maxVisibleRowIndex  = 0,minVisibleIndex = rowCount - 1;
+//    BOOL hasLowerLineVisible = NO,hasUpperLineVisible = NO;
+//    NSInteger upperIndex = MIN(_midVisibleLineIndex, lineCount),lowerIndex = _midVisibleLineIndex + 1;
+    NSInteger maxVisibleRowIndex  = 0,minVisibleIndex = lineCount - 1;
     
-    while (1) {
-        if (upperIndex != rowCount) {
-            BHFormViewRow *row = _Rows[upperIndex];
-            if ((row.beginX >= visibleMaxX || row.maxX <= visibleMinX) || (row.beginY >= visibleMaxY || row.maxY <= visibleMinY)) {
-                row.visible = NO;
-                if (hasUpperRowVisible) {
-                    for (NSInteger rc = upperIndex; rc != rowCount; rc++) {
-                        BHFormViewRow *currentRow = _Rows[rc];
-                        if (currentRow.hasVisibleCell) {
-                            NSInteger count = currentRow.currentCells.count;
-                            NSMutableArray *array = currentRow.currentCells;
-                            CGRect *rectForCells = row.rectsForCells;
-                            BOOL *columnVisibles = currentRow.columnsVisible;
-                            for (NSInteger columnIndex = 0; columnIndex != count; columnIndex++) {
-                                BHFormViewCell *cell = array[columnIndex];
-                                //超长的cell需要单独判断
-                                CGRect rectForCell = rectForCells[columnIndex];
-                                if (rectForCell.size.height > currentRow.standardHeightForColumn && isVisibleRect(rectForCell, visibleMinX, visibleMinY, visibleMaxX, visibleMaxY)) {
-                                    //可见的超长cell
-                                }
-                                else
-                                {
-                                    columnVisibles[columnIndex] = NO;
-                                    if ((NSNull *)cell != [NSNull null]) {
-                                        [cell removeFromSuperview];
-                                        [self addCellToReusePool:cell];
-                                        array[columnIndex] = [NSNull null];
-                                    }
-                                }
-                            }
-                        }
-                        currentRow.visible = NO;
-                    }
-                    if (!_veryHighCellsCount) {
-                        upperIndex = rowCount - 1;
+    NSUInteger lineCount = _lines.count;
+    
+    //统计当前情况下，可见的line
+    for (NSUInteger lineIndex = 0; lineIndex != lineCount; lineIndex++) {
+        BHFormViewLine *line = _lines[lineIndex];
+        if ((line.beginX >= visibleMaxX || line.maxX <= visibleMinX) || (line.beginY >= visibleMaxY || line.maxY <= visibleMinY)) {
+            line.visible = NO;
+                //移除全部cell
+                NSInteger count = line.currentCells.count;
+                NSMutableArray *array = line.currentCells;
+                BOOL *columnVisibles = line.itemsVisibilities;
+                for (NSInteger itemIndex = 0; itemIndex != count; itemIndex++) {
+                    BHFormViewCell *cell = array[itemIndex];
+                    columnVisibles[itemIndex] = NO;
+                    if ((NSNull *)cell != [NSNull null]) {
+                        [cell removeFromSuperview];
+                        [self addCellToReusePool:cell];
+                        array[itemIndex] = [NSNull null];
                     }
                 }
-                else
-                {
-                    //移除全部cell
-                    NSInteger count = row.currentCells.count;
-                    NSMutableArray *array = row.currentCells;
-                    BOOL *columnVisibles = row.columnsVisible;
-                    for (NSInteger columnIndex = 0; columnIndex != count; columnIndex++) {
-                        BHFormViewCell *cell = array[columnIndex];
-                        columnVisibles[columnIndex] = NO;
-                        if ((NSNull *)cell != [NSNull null]) {
-                            [cell removeFromSuperview];
-                            [self addCellToReusePool:cell];
-                            array[columnIndex] = [NSNull null];
-                        }
-                    }
-                }
-                row.hasVisibleCell = NO;
-            }
-            else
-            {
-                if (upperIndex  < minVisibleIndex) {
-                    minVisibleIndex = upperIndex;
-                }
-                if (upperIndex > maxVisibleRowIndex) {
-                    maxVisibleRowIndex = upperIndex;
-                }
-                hasUpperRowVisible = YES;
-                //                printf("\n upper visible rowIndex = %d hasVeryHighCell %d",row.rowIndex,row.hasVeryHighCell);
-                row.visible = YES;
-            }
-            upperIndex++;
+            line.hasVisibleCell = NO;
         }
-        
-        
-        if (lowerIndex != -1) {
-            BHFormViewRow *row = _Rows[lowerIndex];
-            if ((row.beginX >= visibleMaxX || row.maxX <= visibleMinX) || (row.beginY >= visibleMaxY || row.maxY <= visibleMinY)) {
-                row.visible = NO;
-                if (hasLowerRowVisible) {
-                    for (NSInteger rc = lowerIndex; rc >= 0; rc--) {
-                        BHFormViewRow *currentRow = _Rows[rc];
-                        if (currentRow.hasVisibleCell && !currentRow.hasVeryHighCell) {
-                            NSInteger count = currentRow.currentCells.count;
-                            NSMutableArray *array = currentRow.currentCells;
-                            BOOL *columnVisibles = currentRow.columnsVisible;
-                            CGRect *rectForCells = row.rectsForCells;
-                            for (NSInteger columnIndex = 0; columnIndex != count; columnIndex++) {
-                                BHFormViewCell *cell = array[columnIndex];
-                                CGRect rectForCell = rectForCells[columnIndex];
-                                if (rectForCell.size.height > currentRow.standardHeightForColumn && isVisibleRect(rectForCell, visibleMinX, visibleMinY, visibleMaxX, visibleMaxY)) {
-                                    //可见的超长cell
-                                }
-                                else
-                                {
-                                    columnVisibles[columnIndex] = NO;
-                                    if ((NSNull *)cell != [NSNull null]) {
-                                        [cell removeFromSuperview];
-                                        [self addCellToReusePool:cell];
-                                        array[columnIndex] = [NSNull null];
-                                    }
-                                }
-                            }
-                        }
-                        currentRow.visible = NO;
-                    }
-                    if (!_veryHighCellsCount) {
-                        lowerIndex = 0;
-                    }
-                }
-                else{
-                    //移除全部cell
-                    NSInteger count = row.currentCells.count;
-                    NSMutableArray *array = row.currentCells;
-                    BOOL *columnVisibles = row.columnsVisible;
-                    for (NSInteger columnIndex = 0; columnIndex != count; columnIndex++) {
-                        BHFormViewCell *cell = array[columnIndex];
-                        columnVisibles[columnIndex] = NO;
-                        if ((NSNull *)cell != [NSNull null]) {
-                            [cell removeFromSuperview];
-                            [self addCellToReusePool:cell];
-                            array[columnIndex] = [NSNull null];
-                        }
-                    }
-                }
-                row.hasVisibleCell = NO;
-            }
-            else
-            {
-                if (lowerIndex  < minVisibleIndex) {
-                    minVisibleIndex = lowerIndex;
-                }
-                if (lowerIndex > maxVisibleRowIndex) {
-                    maxVisibleRowIndex = lowerIndex;
-                }
-                hasLowerRowVisible = YES;
-                row.visible = YES;
-                //                printf("\n lower visible rowIndex = %d hasVeryHighCell %d",row.rowIndex,row.hasVeryHighCell);
-            }
-            lowerIndex--;
-        }
-        
-        if (upperIndex == rowCount && lowerIndex == -1) {
-            break;
+        else
+        {
+            //printf("\n upper visible rowIndex = %d hasVeryHighCell %d",row.rowIndex,row.hasVeryHighCell);
+            line.visible = YES;
         }
     }
-    _midVisibleRowIndex = (minVisibleIndex + maxVisibleRowIndex) / 2;
-    for (BHFormViewRow *row in _Rows) {
+    
+    _midVisibleLineIndex = (minVisibleIndex + maxVisibleRowIndex) / 2;
+    for (BHFormViewLine *line in _lines) {
         NSInteger visibleMinIndex = 0;
-        NSInteger visibleMaxIndex = row.columnCount - 1;
-        NSInteger columnCount = row.columnCount;
-        if (row.visible) {
-            CGRect *rects = row.rectsForCells;
-            BOOL *columnVisibles = row.columnsVisible;
-            NSInteger lowerIndex = row.midVisibleColumn,upperIndex = MIN(lowerIndex + 1, columnCount -1);
+        NSInteger visibleMaxIndex = line.itemCount - 1;
+        NSInteger columnCount = line.itemCount;
+        if (line.visible) {
+            CGRect *rects = line.rectsForCells;
+            BOOL *columnVisibles = line.itemsVisibilities;
+            NSInteger lowerIndex = line.midVisibleItemIndex,upperIndex = MIN(lowerIndex + 1, columnCount -1);
 //            printf("\n row.midVisibleColumn %d",row.midVisibleColumn);
             BOOL hasLowerVisible = NO,hasUpperVisible = NO;
             while (1) {
                 BOOL visible = NO;
-                //                    printf("\n row.hasVeryHighCell %d row.index %d",row.hasVeryHighCell,row.rowIndex);
+                //printf("\n row.hasVeryHighCell %d row.index %d",row.hasVeryHighCell,row.rowIndex);
                 if (lowerIndex >= 0) {
                     visible = isVisibleRect(rects[lowerIndex], visibleMinX, visibleMinY, visibleMaxX, visibleMaxY);
                     columnVisibles[lowerIndex] = visible;
                     if (visible) {
-                        row.visible = YES;
+                        line.visible = YES;
                         hasLowerVisible = YES;
                         if (lowerIndex < visibleMinIndex) {
                             visibleMinIndex = lowerIndex;
@@ -408,41 +372,41 @@
                             visibleMaxIndex = lowerIndex;
                         }
                         //获取一个新的cell
-                        if (row.currentCells[lowerIndex] == [NSNull null]) {
-                            BHFormViewCell *cell = [_dataSource formView:self cellForRow:row.rowIndex column:lowerIndex];
-                            cell.frame = row.rectsForCells[lowerIndex];
-                            row.currentCells[lowerIndex] = cell;
+                        if (line.currentCells[lowerIndex] == [NSNull null]) {
+                            BHFormViewCell *cell = [_dataSource formView:self cellForRow:line.lineIndex column:lowerIndex];
+                            cell.frame = line.rectsForCells[lowerIndex];
+                            line.currentCells[lowerIndex] = cell;
                             [self addSubview:cell];
-                            row.hasVisibleCell = YES;
+                            line.hasVisibleCell = YES;
                         }
                     }
-                    else if (hasLowerVisible && !row.hasVeryHighCell){
+                    else if (hasLowerVisible && !line.hasCrossLineCell){
                         for (NSInteger columnIndex = lowerIndex; columnIndex != -1; columnIndex--) {
-                            BHFormViewCell *cell = (BHFormViewCell *)row.currentCells[columnIndex];
+                            BHFormViewCell *cell = (BHFormViewCell *)line.currentCells[columnIndex];
                             if ((NSNull *)cell != [NSNull null]) {
                                 [cell removeFromSuperview];
                                 [self addCellToReusePool:cell];
-                                row.currentCells[columnIndex] = [NSNull null];
+                                line.currentCells[columnIndex] = [NSNull null];
                             }
                             columnVisibles[columnIndex] = NO;
                         }
                         //隐藏的cell移入重用池
                         lowerIndex = 0;
                     }
-                    else if (row.currentCells[lowerIndex] != [NSNull null])
+                    else if (line.currentCells[lowerIndex] != [NSNull null])
                     {
-                        BHFormViewCell *cell = (BHFormViewCell *)row.currentCells[lowerIndex];
+                        BHFormViewCell *cell = (BHFormViewCell *)line.currentCells[lowerIndex];
                         if ((NSNull *)cell != [NSNull null]) {
                             [cell removeFromSuperview];
                             [self addCellToReusePool:cell];
-                            row.currentCells[lowerIndex] = [NSNull null];
+                            line.currentCells[lowerIndex] = [NSNull null];
                         }
                     }
                 }
                 if (upperIndex != columnCount) {
                     visible = isVisibleRect(rects[upperIndex], visibleMinX, visibleMinY, visibleMaxX, visibleMaxY);
                     if (visible) {
-                        row.visible = YES;
+                        line.visible = YES;
                         hasUpperVisible = YES;
                         if (upperIndex < visibleMinIndex) {
                             visibleMinIndex = lowerIndex;
@@ -451,32 +415,32 @@
                             visibleMaxIndex = upperIndex;
                         }
                         //获取一个新的cell
-                        if (row.currentCells[upperIndex] == [NSNull null]) {
-                            BHFormViewCell *cell = [_dataSource formView:self cellForRow:row.rowIndex column:upperIndex];
-                            cell.frame = row.rectsForCells[upperIndex];
-                            row.currentCells[upperIndex] = cell;
+                        if (line.currentCells[upperIndex] == [NSNull null]) {
+                            BHFormViewCell *cell = [_dataSource formView:self cellForRow:line.lineIndex column:upperIndex];
+                            cell.frame = line.rectsForCells[upperIndex];
+                            line.currentCells[upperIndex] = cell;
                             [self addSubview:cell];
-                            row.hasVisibleCell = YES;
+                            line.hasVisibleCell = YES;
                         }
-                    }else if (hasUpperVisible && !row.hasVeryHighCell){
+                    }else if (hasUpperVisible && !line.hasCrossLineCell){
                         for (NSInteger columnIndex = upperIndex; columnIndex != columnCount; columnIndex++) {
-                            BHFormViewCell *cell = (BHFormViewCell *)row.currentCells[columnIndex];
+                            BHFormViewCell *cell = (BHFormViewCell *)line.currentCells[columnIndex];
                             if ((NSNull *)cell != [NSNull null]) {
                                 [cell removeFromSuperview];
                                 [self addCellToReusePool:cell];
-                                row.currentCells[columnIndex] = [NSNull null];
+                                line.currentCells[columnIndex] = [NSNull null];
                             }
                             columnVisibles[columnIndex] = NO;
                         }
                         //隐藏的cell移入重用池
                         upperIndex = columnCount;
-                    }else if (row.currentCells[upperIndex] != [NSNull null])
+                    }else if (line.currentCells[upperIndex] != [NSNull null])
                     {
-                        BHFormViewCell *cell = (BHFormViewCell *)row.currentCells[upperIndex];
+                        BHFormViewCell *cell = (BHFormViewCell *)line.currentCells[upperIndex];
                         if ((NSNull *)cell != [NSNull null]) {
                             [cell removeFromSuperview];
                             [self addCellToReusePool:cell];
-                            row.currentCells[upperIndex] = [NSNull null];
+                            line.currentCells[upperIndex] = [NSNull null];
                         }
                     }
                 }
@@ -490,15 +454,15 @@
                     upperIndex++;
                 }
             }
-            row.minVisibleColumn = MAX(visibleMinIndex, 0);
-            row.maxVisibleColumn = MAX(visibleMaxIndex, 0);
+            line.minVisibleItem = MAX(visibleMinIndex, 0);
+            line.maxVisibleItem = MAX(visibleMaxIndex, 0);
 //            printf("\n visibleMinIndex = %d visibleMaxIndex = %d",visibleMinIndex,visibleMaxIndex);
-            row.midVisibleColumn = (visibleMinIndex + visibleMaxIndex) / 2;
+            line.midVisibleItemIndex = (visibleMinIndex + visibleMaxIndex) / 2;
         }
         else{
             visibleMinIndex = columnCount / 2;
             visibleMaxIndex = columnCount / 2;
-            row.midVisibleColumn = columnCount / 2;
+            line.midVisibleItemIndex = columnCount / 2;
         }
     }
     //根据当前可视的cell重新填写内容。
@@ -513,6 +477,7 @@
         poolForIdentifier = [NSMutableArray arrayWithCapacity:64];
         _reusePoolDict[cell.reuseIdentifier] = poolForIdentifier;
     }
+    [cell removeFromSuperview];
     [cell cellWillBeRecycled];
     if (poolForIdentifier.count < 1024) {
         [poolForIdentifier addObject:cell];
@@ -540,14 +505,14 @@
         UITouch *touch = [touches anyObject];
         CGPoint point =  [touch locationInView:self];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            for (BHFormViewRow *row in _Rows) {
+            for (BHFormViewLine *row in _lines) {
                 if (row.visible) {
-                    NSInteger count = row.columnCount;
+                    NSInteger count = row.itemCount;
                     CGRect *rect = row.rectsForCells;
                     for (NSInteger i = 0; i != count; i++) {
                         if (CGRectContainsPoint(rect[i], point)) {
                             dispatch_async(dispatch_get_main_queue(), ^{
-                                [self.delegate formView:self didTapColumn:i inRow:row.rowIndex];
+                                [self.delegate formView:self didTapColumn:i inRow:row.lineIndex];
                             });
                             break;
                         }
@@ -558,9 +523,46 @@
     }
 }
 
+
+-(void)reloadCellAtRow:(NSInteger)row column:(NSInteger)column
+{
+    NSInteger objIndex = 0;
+    
+    BHFormViewLine *objLine = nil;
+    
+    switch (_currentLayoutMode) {
+        case BHRowFirstMode:
+        {
+            objLine = _lines[row];
+            objIndex = column;
+        }
+            break;
+        case BHColumnFirstMode:
+        {
+            objLine = _lines[column];
+            objIndex = row;
+        }
+            break;
+        default:
+            break;
+    }
+    if (objLine) {
+        if (objLine.currentCells.count > objIndex) {
+            BHFormViewCell *cell = objLine.currentCells[objIndex];
+            //讲这个单元格回收，并再对应的位置重新加载。
+            if ([cell isKindOfClass:[BHFormViewCell class]]) {
+                [self addCellToReusePool:cell];
+                BHFormViewCell *cell = [_dataSource formView:self cellForRow:row column:column];
+                cell.frame = objLine.rectsForCells[objIndex];
+                objLine.currentCells[objIndex] = cell;
+            }
+        }
+    }
+}
+
 -(void)dealloc{
-    if (_veryHighCellsRects) {
-        free(_veryHighCellsRects);
+    if (_sizeOverflowCellsRects) {
+        free(_sizeOverflowCellsRects);
     }
 }
 

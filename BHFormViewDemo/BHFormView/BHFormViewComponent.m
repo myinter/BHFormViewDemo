@@ -20,7 +20,7 @@ inline BOOL isVisibleRect(CGRect rect,CGFloat beginX,CGFloat beginY,CGFloat endX
 
 }
 
-inline CGRect CheckCollisionWithRectsInFormerRows(CGRect *veryHighCellsRects,NSInteger veryHighCellsCount,CGRect objRect){
+inline CGRect CheckCollisionWithRectsInLinesRows(CGRect *veryHighCellsRects,NSInteger veryHighCellsCount,CGRect objRect){
 		for (int i = 0; i != veryHighCellsCount; i++) {
 		CGRect rect = veryHighCellsRects[i];
 		if (CGRectIntersectsRect(rect, objRect)) {

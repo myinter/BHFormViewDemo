@@ -44,7 +44,7 @@
 }
 
 
--(NSInteger)formView:(BHFormView *)formView numberOfColumnsInRow:(NSInteger)row
+-(NSInteger)formView:(BHFormView *)formView numberOfItemsInLine:(NSInteger)row
 {
     switch (row) {
         case 0:
@@ -66,7 +66,7 @@
     return 0;
 }
 
--(NSInteger)numberOfRowsInFormView:(BHFormView *)formView
+-(NSInteger)numberOfLinesInFormView:(BHFormView *)formView
 {
     return 5;
 }
@@ -109,7 +109,7 @@
 
 
 //返回每一行的基准高度（即改行单元格高度值的最典型值）
--(CGFloat)formView:(BHFormView *)formView heightForRow:(NSInteger)row
+-(CGFloat)formView:(BHFormView *)formView sizeForLine:(NSInteger)row
 {
     return formView.frame.size.height / 5;
 }

@@ -10,9 +10,9 @@
 #define BHFormViewComponent_h
 
 #include <stdio.h>
-#include "BHFormViewRow.h"
+#include "BHFormViewLine.h"
 #include <CoreGraphics/CoreGraphics.h>
 extern inline BOOL valueBetween(CGFloat value,CGFloat begin,CGFloat end);
 extern inline BOOL isVisibleRect(CGRect rect,CGFloat beginX,CGFloat beginY,CGFloat endX,CGFloat endY);
-extern inline CGRect CheckCollisionWithRectsInFormerRows(CGRect *veryHighCellsRects,NSInteger veryHighCellsCount,CGRect objRect);
+extern inline CGRect CheckCollisionWithRectsInLinesRows(CGRect *veryHighCellsRects,NSInteger veryHighCellsCount,CGRect objRect);
 #endif /* BHFormViewComponent_h */

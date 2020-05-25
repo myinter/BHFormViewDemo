@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		40785271210310C10054DCAD /* BHFormViewRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 40785270210310C10054DCAD /* BHFormViewRow.m */; };
+		40628B03247C196A006FEFCB /* VerticalWaterfallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 40628B01247C1969006FEFCB /* VerticalWaterfallViewController.m */; };
+		40628B04247C196A006FEFCB /* VerticalWaterfallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 40628B02247C1969006FEFCB /* VerticalWaterfallViewController.xib */; };
+		40628B07247C1CBE006FEFCB /* PhotoFormViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 40628B06247C1CBE006FEFCB /* PhotoFormViewCell.m */; };
+		40628B09247C1CD8006FEFCB /* PhotoFormViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 40628B08247C1CD8006FEFCB /* PhotoFormViewCell.xib */; };
+		40785271210310C10054DCAD /* BHFormViewLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 40785270210310C10054DCAD /* BHFormViewLine.m */; };
 		4078527421042E630054DCAD /* BHFormViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4078527321042E630054DCAD /* BHFormViewCell.m */; };
 		40785277210473FB0054DCAD /* FormViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 40785276210473FB0054DCAD /* FormViewCell.m */; };
 		40785279210474380054DCAD /* FormViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 40785278210474380054DCAD /* FormViewCell.xib */; };
@@ -53,8 +57,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		4078526F210310C10054DCAD /* BHFormViewRow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BHFormViewRow.h; sourceTree = "<group>"; };
-		40785270210310C10054DCAD /* BHFormViewRow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BHFormViewRow.m; sourceTree = "<group>"; };
+		40628B00247C1969006FEFCB /* VerticalWaterfallViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VerticalWaterfallViewController.h; sourceTree = "<group>"; };
+		40628B01247C1969006FEFCB /* VerticalWaterfallViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VerticalWaterfallViewController.m; sourceTree = "<group>"; };
+		40628B02247C1969006FEFCB /* VerticalWaterfallViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VerticalWaterfallViewController.xib; sourceTree = "<group>"; };
+		40628B05247C1CBE006FEFCB /* PhotoFormViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhotoFormViewCell.h; sourceTree = "<group>"; };
+		40628B06247C1CBE006FEFCB /* PhotoFormViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PhotoFormViewCell.m; sourceTree = "<group>"; };
+		40628B08247C1CD8006FEFCB /* PhotoFormViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhotoFormViewCell.xib; sourceTree = "<group>"; };
+		4078526F210310C10054DCAD /* BHFormViewLine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BHFormViewLine.h; sourceTree = "<group>"; };
+		40785270210310C10054DCAD /* BHFormViewLine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BHFormViewLine.m; sourceTree = "<group>"; };
 		4078527221042E630054DCAD /* BHFormViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BHFormViewCell.h; sourceTree = "<group>"; };
 		4078527321042E630054DCAD /* BHFormViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BHFormViewCell.m; sourceTree = "<group>"; };
 		40785275210473FB0054DCAD /* FormViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FormViewCell.h; sourceTree = "<group>"; };
@@ -153,10 +163,16 @@
 				A5A573D21CE9C7CF00B1F8AD /* ViewController.h */,
 				A5A573D31CE9C7CF00B1F8AD /* ViewController.m */,
 				A5A573E31CE9C7ED00B1F8AD /* ViewController.xib */,
+				40628B00247C1969006FEFCB /* VerticalWaterfallViewController.h */,
+				40628B01247C1969006FEFCB /* VerticalWaterfallViewController.m */,
+				40628B02247C1969006FEFCB /* VerticalWaterfallViewController.xib */,
 				40785275210473FB0054DCAD /* FormViewCell.h */,
 				40785276210473FB0054DCAD /* FormViewCell.m */,
 				40785278210474380054DCAD /* FormViewCell.xib */,
 				A5A573EC1CE9DBDC00B1F8AD /* ViewController2.h */,
+				40628B05247C1CBE006FEFCB /* PhotoFormViewCell.h */,
+				40628B06247C1CBE006FEFCB /* PhotoFormViewCell.m */,
+				40628B08247C1CD8006FEFCB /* PhotoFormViewCell.xib */,
 				A5A573ED1CE9DBDC00B1F8AD /* ViewController2.m */,
 				A5A573EE1CE9DBDC00B1F8AD /* ViewController2.xib */,
 				A5A573D81CE9C7CF00B1F8AD /* Assets.xcassets */,
@@ -180,8 +196,8 @@
 			children = (
 				A5A573E61CE9C8D100B1F8AD /* BHFormView.h */,
 				A5A573E71CE9C8D100B1F8AD /* BHFormView.m */,
-				4078526F210310C10054DCAD /* BHFormViewRow.h */,
-				40785270210310C10054DCAD /* BHFormViewRow.m */,
+				4078526F210310C10054DCAD /* BHFormViewLine.h */,
+				40785270210310C10054DCAD /* BHFormViewLine.m */,
 				4078527A2104871C0054DCAD /* BHFormViewComponent.h */,
 				4078527B2104871C0054DCAD /* BHFormViewComponent.m */,
 				4078527221042E630054DCAD /* BHFormViewCell.h */,
@@ -254,6 +270,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -282,6 +299,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				40785279210474380054DCAD /* FormViewCell.xib in Resources */,
+				40628B09247C1CD8006FEFCB /* PhotoFormViewCell.xib in Resources */,
+				40628B04247C196A006FEFCB /* VerticalWaterfallViewController.xib in Resources */,
 				A5A573DC1CE9C7CF00B1F8AD /* LaunchScreen.storyboard in Resources */,
 				A5A573F01CE9DBDC00B1F8AD /* ViewController2.xib in Resources */,
 				A5A573E41CE9C7ED00B1F8AD /* ViewController.xib in Resources */,
@@ -307,10 +326,12 @@
 				A5A573E81CE9C8D100B1F8AD /* BHFormView.m in Sources */,
 				A5A573D41CE9C7CF00B1F8AD /* ViewController.m in Sources */,
 				40785277210473FB0054DCAD /* FormViewCell.m in Sources */,
+				40628B07247C1CBE006FEFCB /* PhotoFormViewCell.m in Sources */,
 				4078527421042E630054DCAD /* BHFormViewCell.m in Sources */,
+				40628B03247C196A006FEFCB /* VerticalWaterfallViewController.m in Sources */,
 				4078527C2104871C0054DCAD /* BHFormViewComponent.m in Sources */,
 				A5A573D11CE9C7CF00B1F8AD /* AppDelegate.m in Sources */,
-				40785271210310C10054DCAD /* BHFormViewRow.m in Sources */,
+				40785271210310C10054DCAD /* BHFormViewLine.m in Sources */,
 				A5A573CE1CE9C7CF00B1F8AD /* main.m in Sources */,
 				A5A573EB1CE9CACF00B1F8AD /* UIImage+FuntionExtention.m in Sources */,
 				A5A573EF1CE9DBDC00B1F8AD /* ViewController2.m in Sources */,

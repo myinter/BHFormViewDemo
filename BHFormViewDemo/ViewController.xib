@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment version="1792" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -31,6 +29,13 @@
                         <action selector="next:" destination="-1" eventType="touchUpInside" id="dKo-KV-5Qb"/>
                     </connections>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pW7-WO-b3t">
+                    <rect key="frame" x="39" y="46" width="77" height="30"/>
+                    <state key="normal" title="垂直瀑布流"/>
+                    <connections>
+                        <action selector="gotoVerticalWaterfall:" destination="-1" eventType="touchUpInside" id="X0a-th-svl"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
@@ -39,9 +44,11 @@
                 <constraint firstItem="npF-q0-EiU" firstAttribute="leading" secondItem="Zgh-KZ-9np" secondAttribute="leading" constant="8" id="Kio-Cs-E3b"/>
                 <constraint firstAttribute="trailing" secondItem="npF-q0-EiU" secondAttribute="trailing" constant="8" id="OgS-zZ-qLx"/>
                 <constraint firstItem="npF-q0-EiU" firstAttribute="top" secondItem="BL0-Ta-s6n" secondAttribute="bottom" constant="25" id="e1n-fs-jhK"/>
+                <constraint firstItem="pW7-WO-b3t" firstAttribute="top" secondItem="Zgh-KZ-9np" secondAttribute="top" constant="46" id="h7Q-Vf-BLq"/>
                 <constraint firstItem="npF-q0-EiU" firstAttribute="top" secondItem="Zgh-KZ-9np" secondAttribute="top" constant="101" id="maf-Z4-D0K"/>
+                <constraint firstItem="pW7-WO-b3t" firstAttribute="leading" secondItem="Zgh-KZ-9np" secondAttribute="leading" constant="39" id="vcH-R7-SI1"/>
             </constraints>
-            <point key="canvasLocation" x="20" y="323"/>
+            <point key="canvasLocation" x="-36" y="253"/>
         </view>
     </objects>
 </document>
