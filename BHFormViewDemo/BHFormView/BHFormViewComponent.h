@@ -15,5 +15,4 @@
 extern inline BOOL valueBetween(CGFloat value,CGFloat begin,CGFloat end);
 extern inline BOOL isVisibleRect(CGRect rect,CGFloat beginX,CGFloat beginY,CGFloat endX,CGFloat endY);
 extern inline CGRect CheckCollisionWithRectsInLines(CGRect *veryHighCellsRects,NSInteger veryHighCellsCount,CGRect objRect);
-
 #endif /* BHFormViewComponent_h */
