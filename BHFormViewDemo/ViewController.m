@@ -67,7 +67,7 @@
     return 200;
 }
 
--(BHFormViewCell *)formView:(BHFormView *)formView cellForRow:(NSInteger)row column:(NSInteger)column
+-(BHFormViewCell *)formView:(BHFormView *)formView cellForLine:(NSInteger)row item:(NSInteger)column
 {
 	static NSString *reuseId = @"aaa";
 	FormViewCell *cell = (FormViewCell *)[formView cellForReuseId:reuseId];
@@ -85,7 +85,7 @@
    return formView.frame.size.height / 3;
 }
 
--(CGFloat)formView:(BHFormView *)formView widthForColumn:(NSInteger)column
+-(CGFloat)formView:(BHFormView *)formView sizeForItem:(NSInteger)column
 {
     CGFloat width = formView.frame.size.width / 6;
     switch (column) {
@@ -116,4 +116,12 @@
 }
 
 
+- (void)formView:(BHFormView *)formView willDisplayCell:(BHFormViewCell *)cell forItem:(NSInteger)column atLine:(NSInteger)row{
+    NSLog(@"单元格显示 ： %@",cell);
+    
+}
+- (void)formView:(BHFormView *)formView willEndDisplayCell:(BHFormViewCell *)cell forItem:(NSInteger)column atLine:(NSInteger)row
+{
+    NSLog(@"单元格隐藏 ： %@",cell);
+}
 @end

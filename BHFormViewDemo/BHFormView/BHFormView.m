@@ -122,16 +122,16 @@
             for (int itemIndex = 0; itemIndex!= itemCount; itemIndex++) {
                 CGFloat itemHeight = lineBaseSize;
                 CGFloat itemWidth = 0.0;
-                if ([_dataSource respondsToSelector:@selector(formView:widthForColumn:atRow:)]) {
-                    itemWidth = [_dataSource formView:self widthForColumn:itemIndex atRow:line.lineIndex];
+                if ([_dataSource respondsToSelector:@selector(formView:widthForItem:atLine:)]) {
+                    itemWidth = [_dataSource formView:self widthForItem:itemIndex atLine:line.lineIndex];
                 }
                 else{
-                    if ([_dataSource respondsToSelector:@selector(formView:widthForColumn:)]) {
-                        itemWidth = [_dataSource formView:self widthForColumn:itemIndex];
+                    if ([_dataSource respondsToSelector:@selector(formView:sizeForItem:)]) {
+                        itemWidth = [_dataSource formView:self sizeForItem:itemIndex];
                     }
                 }
-                if ([_dataSource respondsToSelector:@selector(formView:heightForColumn:atRow:)]) {
-                    itemHeight = [_dataSource formView:self heightForColumn:itemIndex atRow:lineIndex];
+                if ([_dataSource respondsToSelector:@selector(formView:sizeForItem:atLine:)]) {
+                    itemHeight = [_dataSource formView:self sizeForItem:itemIndex atLine:lineIndex];
                 }
                 
                 newMinCellSizeWidth = MIN(itemWidth, newMinCellSizeWidth);
@@ -290,10 +290,16 @@
                             if (visibles[columnIndex]) {
                                 BHFormViewCell *cell = cells[columnIndex];
                                 if (cell != (BHFormViewCell *)[NSNull null]) {
+                                    if ([self.delegate respondsToSelector:@selector(formView:willEndDisplayCell:forItem:atLine:)]) {
+                                        [self.delegate formView:self willEndDisplayCell:cell forItem:columnIndex atLine:row.lineIndex];
+                                    }
                                     [cell removeFromSuperview];
                                     [self addCellToReusePool:cell];
                                 }
-                                cell = [_dataSource formView:self cellForRow:row.lineIndex column:columnIndex];
+                                cell = [_dataSource formView:self cellForLine:row.lineIndex item:columnIndex];
+                                if ([self.delegate respondsToSelector:@selector(formView:willDisplayCell:forItem:atLine:)]) {
+                                    [self.delegate formView:self willEndDisplayCell:cell forItem:columnIndex atLine:row.lineIndex];
+                                }
                                 row.currentCells[columnIndex] = cell;
                                 [self addSubview:cell];
                                 cell.frame = row.rectsForCells[columnIndex];
@@ -331,6 +337,9 @@
                     BHFormViewCell *cell = array[itemIndex];
                     columnVisibles[itemIndex] = NO;
                     if ((NSNull *)cell != [NSNull null]) {
+                        if ([self.delegate respondsToSelector:@selector(formView:willEndDisplayCell:forItem:atLine:)]) {
+                            [self.delegate formView:self willEndDisplayCell:cell forItem:itemIndex atLine:line.lineIndex];
+                        }
                         [cell removeFromSuperview];
                         [self addCellToReusePool:cell];
                         array[itemIndex] = [NSNull null];
@@ -373,9 +382,12 @@
                         }
                         //获取一个新的cell
                         if (line.currentCells[lowerIndex] == [NSNull null]) {
-                            BHFormViewCell *cell = [_dataSource formView:self cellForRow:line.lineIndex column:lowerIndex];
+                            BHFormViewCell *cell = [_dataSource formView:self cellForLine:line.lineIndex item:lowerIndex];
                             cell.frame = line.rectsForCells[lowerIndex];
                             line.currentCells[lowerIndex] = cell;
+                            if ([self.delegate respondsToSelector:@selector(formView:willDisplayCell:forItem:atLine:)]) {
+                                [self.delegate formView:self willDisplayCell:cell forItem:lowerIndex atLine:line.lineIndex];
+                            }
                             [self addSubview:cell];
                             line.hasVisibleCell = YES;
                         }
@@ -416,7 +428,7 @@
                         }
                         //获取一个新的cell
                         if (line.currentCells[upperIndex] == [NSNull null]) {
-                            BHFormViewCell *cell = [_dataSource formView:self cellForRow:line.lineIndex column:upperIndex];
+                            BHFormViewCell *cell = [_dataSource formView:self cellForLine:line.lineIndex item:upperIndex];
                             cell.frame = line.rectsForCells[upperIndex];
                             line.currentCells[upperIndex] = cell;
                             [self addSubview:cell];
@@ -426,6 +438,9 @@
                         for (NSInteger columnIndex = upperIndex; columnIndex != columnCount; columnIndex++) {
                             BHFormViewCell *cell = (BHFormViewCell *)line.currentCells[columnIndex];
                             if ((NSNull *)cell != [NSNull null]) {
+                                if ([self.delegate respondsToSelector:@selector(formView:willEndDisplayCell:forItem:atLine:)]) {
+                                    [self.delegate formView:self willEndDisplayCell:cell forItem:columnIndex atLine:line.lineIndex];
+                                }
                                 [cell removeFromSuperview];
                                 [self addCellToReusePool:cell];
                                 line.currentCells[columnIndex] = [NSNull null];
@@ -438,6 +453,9 @@
                     {
                         BHFormViewCell *cell = (BHFormViewCell *)line.currentCells[upperIndex];
                         if ((NSNull *)cell != [NSNull null]) {
+                            if ([self.delegate respondsToSelector:@selector(formView:willEndDisplayCell:forItem:atLine:)]) {
+                                [self.delegate formView:self willEndDisplayCell:cell forItem:upperIndex atLine:line.lineIndex];
+                            }
                             [cell removeFromSuperview];
                             [self addCellToReusePool:cell];
                             line.currentCells[upperIndex] = [NSNull null];
@@ -552,7 +570,7 @@
             //讲这个单元格回收，并再对应的位置重新加载。
             if ([cell isKindOfClass:[BHFormViewCell class]]) {
                 [self addCellToReusePool:cell];
-                BHFormViewCell *cell = [_dataSource formView:self cellForRow:row column:column];
+                BHFormViewCell *cell = [_dataSource formView:self cellForLine:row item:column];
                 cell.frame = objLine.rectsForCells[objIndex];
                 objLine.currentCells[objIndex] = cell;
             }

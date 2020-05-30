@@ -71,7 +71,7 @@
     return 5;
 }
 
--(BHFormViewCell *)formView:(BHFormView *)formView cellForRow:(NSInteger)row column:(NSInteger)column
+-(BHFormViewCell *)formView:(BHFormView *)formView cellForLine:(NSInteger)row item:(NSInteger)column
 {
 	static NSString *reuseId = @"aaa";
 	FormViewCell *cell = [formView cellForReuseId:reuseId];
@@ -87,7 +87,7 @@
 
 
 
--(CGFloat)formView:(BHFormView *)formView heightForColumn:(NSInteger)column atRow:(NSInteger)row
+-(CGFloat)formView:(BHFormView *)formView sizeForItem:(NSInteger)column atLine:(NSInteger)row
 {
     if (column == 0) {
         switch (row) {
@@ -114,7 +114,7 @@
     return formView.frame.size.height / 5;
 }
 
--(CGFloat)formView:(BHFormView *)formView widthForColumn:(NSInteger)column atRow:(NSInteger)row
+-(CGFloat)formView:(BHFormView *)formView widthForItem:(NSInteger)column atLine:(NSInteger)row
 {
     CGFloat width = 0.0f;
     if (column == 0 && (row == 0 || row == 2)) {
