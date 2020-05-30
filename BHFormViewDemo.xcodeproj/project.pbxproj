@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -19,7 +19,7 @@
 		A5962EAA1EE012D900E0AE0E /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5962EA91EE012D900E0AE0E /* NotificationCenter.framework */; };
 		A5962EAE1EE012D900E0AE0E /* TodayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5962EAD1EE012D900E0AE0E /* TodayViewController.m */; };
 		A5962EB11EE012D900E0AE0E /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A5962EAF1EE012D900E0AE0E /* MainInterface.storyboard */; };
-		A5962EB51EE012D900E0AE0E /* TodayExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A5962EA71EE012D900E0AE0E /* TodayExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A5962EB51EE012D900E0AE0E /* TodayExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A5962EA71EE012D900E0AE0E /* TodayExtension.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A5A573CE1CE9C7CF00B1F8AD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A573CD1CE9C7CF00B1F8AD /* main.m */; };
 		A5A573D11CE9C7CF00B1F8AD /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A573D01CE9C7CF00B1F8AD /* AppDelegate.m */; };
 		A5A573D41CE9C7CF00B1F8AD /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5A573D31CE9C7CF00B1F8AD /* ViewController.m */; };
@@ -57,6 +57,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		404A3D31248210E700CDACC8 /* BHFormViewDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BHFormViewDemo.entitlements; sourceTree = "<group>"; };
 		40628B00247C1969006FEFCB /* VerticalWaterfallViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VerticalWaterfallViewController.h; sourceTree = "<group>"; };
 		40628B01247C1969006FEFCB /* VerticalWaterfallViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VerticalWaterfallViewController.m; sourceTree = "<group>"; };
 		40628B02247C1969006FEFCB /* VerticalWaterfallViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VerticalWaterfallViewController.xib; sourceTree = "<group>"; };
@@ -157,6 +158,7 @@
 		A5A573CB1CE9C7CF00B1F8AD /* BHFormViewDemo */ = {
 			isa = PBXGroup;
 			children = (
+				404A3D31248210E700CDACC8 /* BHFormViewDemo.entitlements */,
 				A5A573E51CE9C8A500B1F8AD /* BHFormView */,
 				A5A573CF1CE9C7CF00B1F8AD /* AppDelegate.h */,
 				A5A573D01CE9C7CF00B1F8AD /* AppDelegate.m */,
@@ -343,6 +345,7 @@
 /* Begin PBXTargetDependency section */
 		A5962EB41EE012D900E0AE0E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = A5962EA61EE012D900E0AE0E /* TodayExtension */;
 			targetProxy = A5962EB31EE012D900E0AE0E /* PBXContainerItemProxy */;
 		};
@@ -377,10 +380,15 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				INFOPLIST_FILE = TodayExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = Hiung.BHFormViewDemo.TodayExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 			};
 			name = Debug;
 		};
@@ -393,10 +401,15 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				INFOPLIST_FILE = TodayExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = Hiung.BHFormViewDemo.TodayExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 			};
 			name = Release;
 		};
@@ -488,11 +501,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BHFormViewDemo/BHFormViewDemo.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				DEVELOPMENT_TEAM = 85LHTUGQXJ;
 				INFOPLIST_FILE = BHFormViewDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = Hiung.BHFormViewDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 			};
 			name = Debug;
 		};
@@ -500,11 +520,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = BHFormViewDemo/BHFormViewDemo.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				DEVELOPMENT_TEAM = 85LHTUGQXJ;
 				INFOPLIST_FILE = BHFormViewDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = Hiung.BHFormViewDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 			};
 			name = Release;
 		};

@@ -22,17 +22,17 @@ typedef NS_ENUM(NSUInteger, BHFormViewLayoutMode) {
 /*获取每一行的列数*/
 - (NSInteger)formViewItemsInLine:(BHFormView *)formView;
 /*指定某列/行的宽度/高度*/
-- (CGFloat)formView:(BHFormView *)formView sizeForItem:(NSInteger)item;
+- (CGFloat)formView:(BHFormView *)formView sizeForItemIndex:(NSInteger)item;
 /*获取指定行的cell*/
 -(BHFormViewCell *)formView:(BHFormView *)formView cellForLine:(NSInteger)lineIndex item:(NSInteger)itemIndex;
 /*指定某行/列的基准高度/宽度*/
 - (CGFloat)formView:(BHFormView *)formView sizeForLine:(NSInteger)line;
 @optional
 /*指定某行某列的单元格的高/宽度*/
-- (CGFloat)formView:(BHFormView *)formView sizeForItem:(NSInteger)item atLine:(NSInteger)line;
+- (CGFloat)formView:(BHFormView *)formView heightForItem:(NSInteger)item atLine:(NSInteger)line;
 /*返回某一行的单元格数量，若没有实现这个方法，则使用- (NSInteger)formViewItemsInLine:(BHFormView *)formView 返回的全局统一的行列内单元格数*/
 - (NSInteger)formView:(BHFormView *)formView numberOfItemsInLine:(NSInteger)line;
-/*返回某行某列的宽度，若没有实现这个方法，则使用 - (CGFloat)formView:(BHFormView *)formView widthForColumn:(NSInteger)column 返回的全局宽度*/
+/*返回某行某列的，若没有实现这个方法，则使用 - (CGFloat)formView:(BHFormView *)formView widthForColumn:(NSInteger)column 返回的全局宽度*/
 - (CGFloat)formView:(BHFormView *)formView widthForItem:(NSInteger)column atLine:(NSInteger)row;
 /*
  获取当前的布局模式，不返回则使用默认的布局模式
@@ -56,7 +56,7 @@ typedef NS_ENUM(NSUInteger, BHFormViewLayoutMode) {
 - (void)formView:(BHFormView *)formView willEndDisplayCell:(BHFormViewCell *)cell forItem:(NSInteger)column atLine:(NSInteger)row;
 
 @end
-@class BHFormItem;
+//@class BHFormItem;
 @interface BHFormView : UIScrollView<UIScrollViewDelegate>
 {
     CGFloat margin;

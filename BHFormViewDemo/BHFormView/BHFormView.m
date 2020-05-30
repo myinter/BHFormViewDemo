@@ -117,30 +117,84 @@
             line.itemCount = itemCount;
             line.midVisibleItemIndex = itemCount / 2;
             CGFloat lineBaseSize = [_dataSource formView:self sizeForLine:lineIndex];
-            line.standardSizeForColumn = lineBaseSize;
+            line.standardSizeForItem = lineBaseSize;
             line.hasCrossLineCell = NO;
             for (int itemIndex = 0; itemIndex!= itemCount; itemIndex++) {
-                CGFloat itemHeight = lineBaseSize;
+                CGFloat itemSize = lineBaseSize;
                 CGFloat itemWidth = 0.0;
+                CGFloat itemHeight = 0.0;
+                
+                if ([_dataSource respondsToSelector:@selector(formView:sizeForItemIndex:)]) {
+                    itemSize = [_dataSource formView:self sizeForItemIndex:itemIndex];
+                    switch (_currentLayoutMode) {
+                        case BHColumnFirstMode:
+                        {
+                            //列优先模式
+                            itemWidth = itemSize;
+                        }
+                            break;
+                        case BHRowFirstMode:
+                        {
+                            //行优先模式
+                            itemHeight = itemSize;
+                        }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
                 if ([_dataSource respondsToSelector:@selector(formView:widthForItem:atLine:)]) {
                     itemWidth = [_dataSource formView:self widthForItem:itemIndex atLine:line.lineIndex];
                 }
-                else{
-                    if ([_dataSource respondsToSelector:@selector(formView:sizeForItem:)]) {
-                        itemWidth = [_dataSource formView:self sizeForItem:itemIndex];
+                else
+                {
+                    switch (_currentLayoutMode) {
+                        case BHColumnFirstMode:
+                        {
+                            //列优先模式
+                            itemWidth = lineBaseSize;
+                        }
+                            break;
+                        case BHRowFirstMode:
+                        {
+                            //行优先模式
+                            itemWidth = [_dataSource formView:self sizeForItemIndex:itemIndex];
+                        }
+                            break;
+                        default:
+                            break;
                     }
                 }
-                if ([_dataSource respondsToSelector:@selector(formView:sizeForItem:atLine:)]) {
-                    itemHeight = [_dataSource formView:self sizeForItem:itemIndex atLine:lineIndex];
-                }
                 
-                newMinCellSizeWidth = MIN(itemWidth, newMinCellSizeWidth);
-                newMinCellSizeHeight = MIN(itemHeight, newMinCellSizeHeight);
+                if ([_dataSource respondsToSelector:@selector(formView:heightForItem:atLine:)]) {
+                    itemHeight = [_dataSource formView:self heightForItem:itemIndex atLine:lineIndex];
+                }
+                else
+                {
+                    switch (_currentLayoutMode) {
+                        case BHColumnFirstMode:
+                        {
+                            //列优先模式
+                            itemHeight = [_dataSource formView:self sizeForItemIndex:itemIndex];
+                        }
+                            break;
+                        case BHRowFirstMode:
+                        {
+                            //行优先模式
+                            itemHeight = lineBaseSize;
+                        }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                                
+                _minCellSizeWidth = MIN(itemWidth, newMinCellSizeWidth);
+                _minCellSizeHeight = MIN(itemHeight, newMinCellSizeHeight);
                 
                 CGRect rectForItemCell = CGRectMake(baseX, baseY, itemWidth, itemHeight);
                 rectForItemCell = CheckCollisionWithRectsInLines(_sizeOverflowCellsRects,_sizeOverflowCellsCount, rectForItemCell);
-                
-                CGFloat itemSize = 0.0;
                 
                 switch (_currentLayoutMode) {
                     case BHColumnFirstMode:
@@ -156,9 +210,9 @@
                     }
                         break;
                     default:
-                        
                         break;
                 }
+                
                 if (itemSize > lineBaseSize) {
                     line.hasCrossLineCell = YES;
                     if (_sizeOverflowCellsCount == _veryHighCellsContainerSize) {

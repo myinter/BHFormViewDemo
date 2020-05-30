@@ -87,7 +87,7 @@
 
 
 
--(CGFloat)formView:(BHFormView *)formView sizeForItem:(NSInteger)column atLine:(NSInteger)row
+-(CGFloat)formView:(BHFormView *)formView heightForItem:(NSInteger)column atLine:(NSInteger)row
 {
     if (column == 0) {
         switch (row) {

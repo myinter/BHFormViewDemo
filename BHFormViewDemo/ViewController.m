@@ -85,7 +85,7 @@
    return formView.frame.size.height / 3;
 }
 
--(CGFloat)formView:(BHFormView *)formView sizeForItem:(NSInteger)column
+-(CGFloat)formView:(BHFormView *)formView sizeForItemIndex:(NSInteger)column
 {
     CGFloat width = formView.frame.size.width / 6;
     switch (column) {

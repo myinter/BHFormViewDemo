@@ -32,6 +32,6 @@
 @property(nonatomic) NSInteger minVisibleItem;
 @property(nonatomic) NSInteger maxVisibleItem;
 @property(nonatomic) BOOL hasVisibleCell;
-@property(nonatomic) CGFloat standardSizeForColumn;
+@property(nonatomic) CGFloat standardSizeForItem;
 
 @end

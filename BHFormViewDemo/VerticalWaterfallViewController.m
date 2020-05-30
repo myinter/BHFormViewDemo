@@ -44,20 +44,20 @@
 
 -(NSInteger)formView:(BHFormView *)formView numberOfItemsInLine:(NSInteger)row
 {
-    return 20;
+    return 25;
 }
 
--(NSInteger)formViewItemsInLine:(BHFormView *)formView
-{
-    return 20;
-}
+//-(NSInteger)formViewItemsInLine:(BHFormView *)formView
+//{
+//    return 20;
+//}
 
 -(NSInteger)numberOfLinesInFormView:(BHFormView *)formView
 {
     return 2;
 }
 
--(BHFormViewCell *)formView:(BHFormView *)formView cellForLine:(NSInteger)row item:(NSInteger)column
+-(BHFormViewCell *)formView:(BHFormView *)formView cellForLine:(NSInteger)lineIndex item:(NSInteger)item
 {
     static NSString *reuseId = @"aaa";
     PhotoFormViewCell *cell = (PhotoFormViewCell *)[formView cellForReuseId:reuseId];
@@ -66,7 +66,7 @@
         cell.reuseIdentifier = reuseId;
     }
     
-    NSString *urlString = _imgsUrl[column % 3];
+    NSString *urlString = _imgsUrl[item % 3];
     
     if ([_imgsMemCache objectForKey:urlString]) {
         cell.imageView.image = [_imgsMemCache objectForKey:urlString];
@@ -87,7 +87,7 @@
         });
     }
     
-    cell.backgroundColor = (row % 2) ? (column %2 ? [UIColor grayColor] : [UIColor greenColor]) : (column %2 ? [UIColor darkGrayColor] : [UIColor blueColor]);
+    cell.backgroundColor = (lineIndex % 2) ? (item %2 ? [UIColor grayColor] : [UIColor greenColor] ) : (item %2 ? [UIColor darkGrayColor] : [UIColor blueColor]);
     return cell;
 }
 
@@ -98,10 +98,18 @@
 
 -(CGFloat)formView:(BHFormView *)formView sizeForLine:(NSInteger)row
 {
-   return formView.frame.size.height / 3;
+   return formView.frame.size.width / 2;
 }
 
--(CGFloat)formView:(BHFormView *)formView sizeForItem:(NSInteger)column
+-(CGFloat)formView:(BHFormView *)formView heightForItem:(NSInteger)item atLine:(NSInteger)line
+{
+    if (line == 0) {
+        return formView.frame.size.height / 8 * (item % 3 + 1);
+    }
+    return formView.frame.size.height / 4;
+}
+
+-(CGFloat)formView:(BHFormView *)formView sizeForItemIndex:(NSInteger)column
 {
     CGFloat width = formView.frame.size.width / 2;
     return width;
@@ -109,3 +117,4 @@
 
 
 @end
+
