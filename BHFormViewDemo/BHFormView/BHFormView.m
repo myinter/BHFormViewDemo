@@ -306,22 +306,6 @@
         });
 }
 
-//-(CGRect)checkCollisionWithFormerRects:(CGRect)objRect{
-//    for (BHFormViewRow *row in _Rows) {
-//        if (!row.hasVeryHighCell) {
-//            continue;
-//        }
-//        CGRect *rects = row.rectsForCells;
-//        for (int i = 0; i != row.columnCount; i++) {
-//            CGRect rect = rects[i];
-//            if (CGRectIntersectsRect(rect, objRect)) {
-//                objRect = CGRectMake(rect.origin.x + rect.size.width, objRect.origin.y, objRect.size.width, objRect.size.height);
-//            }
-//        }
-//    }
-//    return objRect;
-//}
-
 -(void)setContentOffset:(CGPoint)contentOffset
 {
     [super setContentOffset:contentOffset];
